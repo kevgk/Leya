@@ -1,27 +1,13 @@
-
-
-  _____                               ____      _                  _ 
- |_   _|                             |___ \    | |     /\         (_)
-   | |  _ __ ___  _ __  _ __ _____   ____) | __| |    /  \   _ __  _ 
-   | | | '_ ` _ \| '_ \| '__/ _ \ \ / |__ < / _` |   / /\ \ | '_ \| |
-  _| |_| | | | | | |_) | | | (_) \ V /___) | (_| |  / ____ \| |_) | |
- |_____|_| |_| |_| .__/|_|  \___/ \_/|____/ \__,_| /_/    \_| .__/|_|
-                 | |                                        | |      
-                 |_|                                        |_|      
-
-
-#Version
-  
+#Improv3d Api v0.3.1
+##Version
   - v 0.3.1
 
-#Vorraussetzungen
-
+##Vorraussetzungen
     Webserver(PHP4+)
     MySQL Datenbank
     FTP Client
 
-#Installation
-
+##Installation
     -Öffnen Sie die 'config.php' und tragen Sie ihre MySql Datenbank Zugangsdaten in die dazu vorgesehenen Variablen ein.
     
     -Überprüfen Sie die Rechte und passen Sie diese ggf. an ihre Bedürfnisse an.
@@ -30,13 +16,12 @@
     
     -Öffnen Sie anschliessend die 'improv3d.ahk' und tragen Sie ihren Server mit Pfad zur 'improv3d.php' in die dafür vor gesehene Variable ein.
 
-#Changelog
-
-##Version 0.3.1
+##Changelog
+###Version 0.3.1
 
     - Die Api ist nun kompatibel mit Hostern, die Code an die Ausgabe der Datenbank anfügen.
 
-##Version 0.3
+###Version 0.3
 
     - Unterstützung für mehrere Tabellen hinzugefügt
     - imp_count_rows() hinzugefügt
@@ -44,14 +29,14 @@
     - imp_get_row() hinzugefügt
     - imp_check_table() hinzugefügt
 
-##Version 0.2.1
+###Version 0.2.1
 
     - imp_read_where() Fehler behoben, bei dem nicht alle Zeilen aus gelesen wurden
     - imp_read_where_not() hinzugefügt
     - imp_read_where_greater() hinzugefügt
     - imp_read_where_less() hinzugefügt
 
-##Version 0.2
+###Version 0.2
 
     - imp_compare() hinzugefügt
     - imp_read_where() hinzugefügt
@@ -64,11 +49,11 @@
     - AHK_ONLY Einstellung hinzugefügt
     - FIELD_LENGTH Einstellung hinzugefügt
 
-##Version 0.1
+###Version 0.1
 
     - Release
 
 
-#Author
+##Author
 
   - Kevin 'Improv3d' G.
