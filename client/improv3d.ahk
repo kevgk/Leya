@@ -164,7 +164,11 @@ imp_query(a) {
 	FileRead, response, %A_Temp%/response.tmp
 	FileDelete, %A_Temp%/response.tmp
 	if(response)
-		return response
+	{
+		regex = <!--imp_return="(.*)"-->
+		response := RegExMatch(response, regex, match)
+		return match1
+	}	
 	else
 		return false
 }

@@ -1,6 +1,6 @@
 ﻿<?php
 
-	#version 0.3
+	#version 0.3.1
 	require 'config.php';
 
 	if($pin > 0)
@@ -44,16 +44,16 @@
 
 						if(!$query)
 						{
-							echo "0";
+							imp_return("0");
 						}
 						else
 						{
-							echo $result[0];
+							imp_return($result[0]);
 						}
 					}
 					else
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 				}
 				break;
@@ -75,12 +75,12 @@
 
 						if($success[0] == $value)
 						{
-							echo "1";
+							imp_return("1");
 						}
 					}
 					else
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 				}
 				break;
@@ -95,7 +95,7 @@
 
 					if($rowExist != 0)
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 					else
 					{
@@ -104,11 +104,11 @@
 
 						if($success != 0)
 						{
-							echo "1";
+							imp_return("1");
 						}
 						else
 						{
-							echo "0";
+							imp_return("0");
 						}
 					}
 				}
@@ -126,16 +126,16 @@
 
 					if($success != 0)
 					{
-						echo 0;
+						imp_return(0);
 					}
 					else
 					{
-						echo 1;
+						imp_return(1);
 					}
 				}
 				else
 				{
-					echo "-1";
+					imp_return("-1");
 				}
 				break;
 
@@ -160,16 +160,16 @@
 
 					if($success)
 					{
-						echo 1;
+						imp_return(1);
 					}
 					else
 					{
-						echo "0";
+						imp_return("0");
 					}
 				}
 				else
 				{
-					echo "-1";
+					imp_return("-1");
 				}
 				break;
 
@@ -183,16 +183,16 @@
 					$success 	= mysql_num_rows(mysql_query("SHOW TABLES LIKE '$name'"));
 					if($success !== 1)
 					{
-						echo 1;
+						imp_return(1);
 					}
 					else
 					{
-						echo "0";
+						imp_return("0");
 					}
 				}
 				else
 				{
-					echo "-1";
+					imp_return("-1");
 				}
 				break;
 
@@ -203,7 +203,7 @@
 						$columns .= $column[0] . ",";
 					}
 					$columns = substr($columns, 0, -1);
-					echo $columns;
+					imp_return($columns);
 				break;
 
 			case "list_rows":
@@ -216,14 +216,14 @@
 				}
 
 				$output = substr($output, 0, -2);
-				echo $output;
+				imp_return($output);
 				break;
 
 			case "table_exist":
 				$name = mysql_real_escape_string($_GET["name"], $connection);
 				if(mysql_num_rows(mysql_query("SHOW TABLES LIKE '".$name."'")))
 				{
-					echo 1;
+					imp_return(1);
 				}
 				break;
 
@@ -240,16 +240,16 @@
 						$success	= mysql_num_rows(mysql_query("SELECT $column FROM $table LIMIT 1"));
 						if($success != 1)
 						{
-							echo 1;
+							imp_return(1);
 						}
 						else
 						{
-							echo "0";
+							imp_return("0");
 						}
 					}
 					else
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 
 				}
@@ -264,7 +264,7 @@
 					
 					if($columnExist == 1)
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 					else
 					{
@@ -273,11 +273,11 @@
 						
 						if($success)
 						{
-							echo 1;
+							imp_return(1);
 						}
 						else
 						{
-							echo "0";
+							imp_return("0");
 						}
 					}
 				}	
@@ -299,16 +299,16 @@
 						
 						if($success == 1)
 						{
-							echo "1";
+							imp_return("1");
 						}
 						else
 						{
-							echo "0";
+							imp_return("0");
 						}
 					}
 					else
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 				}
 				break;
@@ -323,11 +323,11 @@
 					
 					if($rowExist != 0)
 					{
-						echo 1;
+						imp_return(1);
 					}
 					else
 					{
-						echo "0";
+						imp_return("0");
 					}
 				}
 				break;
@@ -339,17 +339,19 @@
 				
 				if(is_array($result))
 				{
+					$output = "";
 					for ($i = 0, $x = sizeof($result); $i < $x; ++$i)
 					{
-						echo key($result)." = ".current($result).", \n";
+						$output .= key($result)." = ".current($result).", \n";
 						next($result);
 					}
+					imp_return($output);
 				}
 				else
 				{
 					if(mysql_affected_rows($result) >= 0)
 					{
-						echo 1;
+						imp_return(1);
 					}
 				}
 				break;
@@ -362,7 +364,7 @@
 				if(!empty($to) && !empty($message))
 				{
 					$mail = mail($to, $subject, $message, "From: ".MAIL_SENDER);
-					echo ($mail) ? 1 : 0;	
+					imp_return(($mail) ? 1 : 0);	
 				}
 				break;
 
@@ -373,7 +375,7 @@
 				if(!empty($str) && !empty($algo))
 				{
 					if(in_array($algo, hash_algos()))
-						echo hash($algo, $str);
+						imp_return(hash($algo, $str));
 				}
 				break;
 				
@@ -388,7 +390,7 @@
 					
 					if(!$query)
 					{
-						echo "0";
+						imp_return("0");
 					}
 					else
 					{
@@ -396,7 +398,7 @@
 						{
 							$str .= $res[0] . ", ";
 						}
-						echo substr($str, 0, -2);
+						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
@@ -412,7 +414,7 @@
 					
 					if(!$query)
 					{
-						echo "0";
+						imp_return("0");
 					}
 					else
 					{
@@ -420,7 +422,7 @@
 						{
 							$str .= $res[0] . ", ";
 						}
-						echo substr($str, 0, -2);
+						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
@@ -436,7 +438,7 @@
 					
 					if(!$query)
 					{
-						echo "0";
+						imp_return("0");
 					}
 					else
 					{
@@ -444,7 +446,7 @@
 						{
 							$str .= $res[0] . ", ";
 						}
-						echo substr($str, 0, -2);
+						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
@@ -460,7 +462,7 @@
 					
 					if(!$query)
 					{
-						echo "0";
+						imp_return("0");
 					}
 					else
 					{
@@ -468,7 +470,7 @@
 						{
 							$str .= $res[0] . ", ";
 						}
-						echo substr($str, 0, -2);
+						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
@@ -490,16 +492,16 @@
 						
 						if($result[0] == $compare)
 						{
-							echo 1;
+							imp_return(1);
 						}
 						else
 						{
-							echo "0";
+							imp_return("0");
 						}
 					}
 					else
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 				}
 				break;
@@ -508,7 +510,7 @@
 				$result = mysql_query("SELECT count(1) FROM $table");
 				$row 	= mysql_fetch_array($result);
 				
-				echo $row[0];
+				imp_return($row[0]);
 				break;
 
 			case "get_row":
@@ -529,11 +531,11 @@
 							$str .= $column . ": " . $value . ", ";
 						}
 						
-						echo substr($str, 0, -2);
+						imp_return(substr($str, 0, -2));
 					}
 					else
 					{
-						echo "-1";
+						imp_return("-1");
 					}
 				}
 				break;
@@ -541,6 +543,7 @@
 			case "check_table":
 				$query 	= mysql_query("SELECT * FROM $table");
 				
+
 				while($content = mysql_fetch_assoc($query))
 				{
 					$str .= serialize($content);
@@ -551,12 +554,20 @@
 				
 				$str .= $rows[0];
 
-				echo md5($str);
+				imp_return(md5($str));
 				break;
 				
 			default:
 				die();	
 		}
 		mysql_close($connection);
+
+		
 	}
+
+	function imp_return($val)
+	{
+		echo '<!--imp_return="'.$val.'"-->';
+	}
+
 ?>
