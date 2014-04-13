@@ -1,6 +1,6 @@
 <?php
 
-	#version 0.3.1
+	#version 0.3.2b
 	error_reporting(0);
 
 	/*************************************************************
@@ -8,6 +8,7 @@
 	**************************************************************/
 	
 	$rights = array(
+		#MySQL
 		"read" 					=>	true,
 		"write" 				=>	true,
 		"create_row" 			=>	true,
@@ -22,8 +23,6 @@
 		"rename_column" 		=> 	true,
 		"row_exist" 			=> 	true,
 		"exec" 					=> 	false,
-		"mail" 					=> 	true,
-		"hash" 					=> 	true,
 		"read_where" 			=> 	true,
 		"read_where_not" 		=> 	true,
 		"read_where_greater"	=> 	true,
@@ -31,7 +30,20 @@
 		"compare"				=> 	true,
 		"count_rows"			=> 	true,
 		"get_row"				=> 	true,
-		"check_table"			=> 	true
+		"check_table"			=> 	true,
+
+		#File
+		"file_write"			=> 	false,
+		"file_read"				=> 	true,
+		"file_delete"			=> 	false,
+		"file_rename"			=> 	false,
+		"file_copy"				=> 	false,
+		"file_size"				=> 	true,
+		"file_exists"			=>	true,
+
+		#Misc
+		"mail" 					=> 	true,
+		"hash" 					=> 	true
 	);
 	
 	/*************************************************************

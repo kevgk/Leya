@@ -153,9 +153,58 @@ imp_get_row(table, a) {
 	return imp_query(query)
 }
 
+imp_set_column(table, a, b, c) {
+	global imp_server
+	query := imp_server "?table=" table "&action=set_column&column=" a "&type=" b "&len=" c imp_secure()
+	return imp_query(query)
+}
+
+
 imp_check_table(table) {
 	global imp_server
 	query := imp_server "?table=" table "&action=check_table" imp_secure()
+	return imp_query(query)
+}
+
+imp_file_write(file, content = "", mode = "end") {
+	global imp_server
+	query := imp_server "?action=file_write&file=" file "&content=" content "&mode=" mode imp_secure()
+	return imp_query(query)
+}
+
+imp_file_read(file) {
+	global imp_server
+	query := imp_server "?action=file_read&file=" file imp_secure()
+	return imp_query(query)
+}
+
+imp_file_delete(file) {
+	global imp_server
+	query := imp_server "?action=file_delete&file=" file imp_secure()
+	return imp_query(query)
+}
+
+imp_file_rename(file, name) {
+	global imp_server
+	query := imp_server "?action=file_rename&file=" file "&name=" name imp_secure()
+	return imp_query(query)
+}
+
+imp_file_exists(file) {
+	global imp_server
+	query := imp_server "?action=file_exists&file=" file imp_secure()
+	return imp_query(query)
+}
+
+imp_file_copy(file, dest) {
+	global imp_server
+	query := imp_server "?action=file_copy&file=" file "&dest=" dest imp_secure()
+	return imp_query(query)
+}
+
+imp_file_size(file, unit = "b") {
+	global imp_server
+	query := imp_server "?action=file_get_size&file=" file "&unit=" unit imp_secure()
 	return imp_query(query)
 }
 
@@ -170,7 +219,7 @@ imp_query(a) {
 		return match1
 	}	
 	else
-		return false
+		return 0
 }
 
 imp_secure() {

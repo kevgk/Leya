@@ -1,6 +1,6 @@
 ﻿<?php
 
-	#version 0.3.1
+	#version 0.3.2b
 	require 'config.php';
 
 	if($pin > 0)
@@ -556,13 +556,93 @@
 
 				imp_return(md5($str));
 				break;
+
+			case "file_write":
+				$file = $_GET['file'];
+				$content = $_GET['content'];
+				$mode = $_GET['mode'];
+
+				switch ($mode)
+				{
+					case 'overwrite':
+						$handle = fopen($file, 'w');
+						break;
+
+					case 'end':
+						$handle = fopen($file, 'a');
+						break;
+				}
 				
+				$s = fwrite($handle, $content);
+				fclose($handle);
+				
+				if(empty($content) && file_exists($file))
+				{
+					imp_return(1);
+				}
+				else
+				{
+					($s>0) ? imp_return(1) : imp_return(0);
+				}
+
+				break;
+
+			case "file_read":
+				$file = $_GET['file'];
+				imp_return(file_get_contents($file));
+				break;
+
+			case 'file_delete':
+				$file = $_GET['file'];
+				imp_return(unlink($file));
+				break;
+
+			case 'file_rename':
+				$file = $_GET['file'];
+				$name = $_GET['name'];
+				imp_return(rename($file, $name));
+				break;
+
+			case 'file_copy':
+				$file = $_GET['file'];
+				$dest = $_GET['dest'];
+				imp_return(copy($file, $dest));
+				break;
+
+			case 'file_exists':
+				$file = $_GET['file'];
+				(file_exists($file)) ? imp_return(1) : imp_return(0);
+				break;
+
+			case 'file_size':
+				$file = $_GET['file'];
+				$unit = $_GET['unit'];
+
+				switch ($unit) {
+					case 'b':
+						$divider = 1;
+						break;
+
+					case 'kb':
+						$divider = 1024;
+						break;
+
+					case 'mb':
+						$divider = 1048576;
+						break;
+
+					case 'gb':
+						$divider = 1073741824;
+						break;
+				}
+
+				imp_return(filesize($file)/$divider);
+				break;
+
 			default:
 				die();	
 		}
 		mysql_close($connection);
-
-		
 	}
 
 	function imp_return($val)
