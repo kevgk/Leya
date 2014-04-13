@@ -5,10 +5,10 @@
     - FTP Client
 
 ##Installation
-    -Öffnen Sie die 'config.php' und tragen Sie ihre MySql Datenbank Zugangsdaten in die dazu vorgesehenen Variablen ein.
-    -Überprüfen Sie die Rechte und passen Sie diese ggf. an ihre Bedürfnisse an.
-    -Laden Sie nun die 'improv3d.php' und die "config.php" auf ihren php-fähigen Webserver.
-    -Öffnen Sie anschliessend die 'improv3d.ahk' und tragen Sie ihren Server mit Pfad zur 'improv3d.php' in die dafür vor gesehene Variable ein.
+    - Öffnen Sie die 'config.php' und tragen Sie ihre MySql Datenbank Zugangsdaten in die dazu vorgesehenen Variablen ein.
+    - Überprüfen Sie die Rechte und passen Sie diese ggf. an ihre Bedürfnisse an.
+    - Laden Sie nun die 'improv3d.php' und die "config.php" auf ihren php-fähigen Webserver.
+    - Öffnen Sie anschliessend die 'improv3d.ahk' und tragen Sie ihren Server mit Pfad zur 'improv3d.php' in die dafür vor gesehene Variable ein.
 
 ##Changelog
 ###Version 0.3.1
