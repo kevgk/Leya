@@ -1,4 +1,4 @@
-#Improv3d Api v0.3.1
+#Improv3d Api v0.3.2b
 ##Vorraussetzungen
     - Webserver(PHP4+)
     - MySQL Datenbank
