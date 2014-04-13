@@ -10,14 +10,17 @@
                  |_|                                        |_|      
 
 
+#Version
+  
+  v 0.3.1
 
-Vorraussetzungen
+#Vorraussetzungen
 
     Webserver(PHP4+)
     MySQL Datenbank
     FTP Client
 
-Installation
+#Installation
 
     -Öffnen Sie die 'config.php' und tragen Sie ihre MySql Datenbank Zugangsdaten in die dazu vorgesehenen Variablen ein.
     
@@ -26,3 +29,7 @@ Installation
     -Laden Sie nun die 'improv3d.php' und die "config.php" auf ihren php-fähigen Webserver.
     
     -Öffnen Sie anschliessend die 'improv3d.ahk' und tragen Sie ihren Server mit Pfad zur 'improv3d.php' in die dafür vor gesehene Variable ein.
+
+#Author
+
+  - Kevin 'Improv3d' G.
