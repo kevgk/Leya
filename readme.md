@@ -10,6 +10,9 @@
     - Laden Sie nun die 'improv3d.php' und die "config.php" auf ihren php-fähigen Webserver.
     - Öffnen Sie anschliessend die 'improv3d.ahk' und tragen Sie ihren Server mit Pfad zur 'improv3d.php' in die dafür vor gesehene Variable ein.
 
+##Dokumentation
+Die Dokumentation ist unter folgendem Link verfügbar: [API Dokumentation](http://api.improv3d.de/)
+
 ##Changelog
 ###Version 0.3.1
     - Die Api ist nun kompatibel mit Hostern, die Code an die Ausgabe der Datenbank anfügen.
