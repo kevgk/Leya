@@ -1,49 +1,50 @@
-# Improv3d Api v0.3.2b
-## Vorraussetzungen
+# Improv3d Api v0.4
+## Requirements
     - Webserver(PHP4+)
-    - MySQL Datenbank
-    - FTP Client
+    - MySQL database
 
 ## Installation
-    - Öffnen Sie die 'config.php' und tragen Sie ihre MySql Datenbank Zugangsdaten in die dazu vorgesehenen Variablen ein.
-    - Überprüfen Sie die Rechte und passen Sie diese ggf. an ihre Bedürfnisse an.
-    - Laden Sie nun die 'improv3d.php' und die "config.php" auf ihren php-fähigen Webserver.
-    - Öffnen Sie anschliessend die 'improv3d.ahk' und tragen Sie ihren Server mit Pfad zur 'improv3d.php' in die dafür vor gesehene Variable ein.
-
-## Dokumentation
-Die Dokumentation ist unter folgendem Link verfügbar: [API Dokumentation](http://api.improv3d.de/)
+    - Open 'config.php', fill in your server data and adjust permissions.
+    - Upload the 'improv3d.php' and 'config.php' files.
+    - Open 'improv3d.ahk' and fill in you serveradress.
 
 ## Changelog
+### Version 0.4
+    - Switched from MySQL to MySQLi
+    - Removed pin function
+    - Optimized code
+    - Translated into english
+
 ### Version 0.3.1
-    - Die Api ist nun kompatibel mit Hostern, die Code an die Ausgabe der Datenbank anfügen.
+    - Added support for hosts that append code to the output
 
 ### Version 0.3
-    - Unterstützung für mehrere Tabellen hinzugefügt
-    - imp_count_rows() hinzugefügt
-    - imp_count_columns() hinzugefügt
-    - imp_get_row() hinzugefügt
-    - imp_check_table() hinzugefügt
+    - Added support for multiple tables
+    - Added imp_count_rows()
+    - Added imp_count_columns()
+    - Added imp_get_row()
+    - Added imp_check_table()
 
 ### Version 0.2.1
-    - imp_read_where() Fehler behoben, bei dem nicht alle Zeilen aus gelesen wurden
-    - imp_read_where_not() hinzugefügt
-    - imp_read_where_greater() hinzugefügt
-    - imp_read_where_less() hinzugefügt
+    - Fixed a bug with imp_read_where(), where not all rows where searched
+    - Added imp_read_where_not()
+    - Added imp_read_where_greater()
+    - Added imp_read_where_less()
 
 ### Version 0.2
-    - imp_compare() hinzugefügt
-    - imp_read_where() hinzugefügt
-    - imp_exec() hinzugefügt
-    - imp_hash() hinzugefügt
-    - imp_mail() hinzugefügt
-    - imp_table_exist() hinzugefügt
-    - Skript Optimierung
-    - config.php hinzugefügt
-    - AHK_ONLY Einstellung hinzugefügt
-    - FIELD_LENGTH Einstellung hinzugefügt
+    - Added imp_compare()
+    - Added imp_read_where()
+    - Added imp_exec()
+    - Added imp_hash()
+    - Added imp_mail()
+    - Added imp_table_exist()
+    - Code optimizations
+    - Added config.php
+    - Added AHK_ONLY setting
+    - Added FIELD_LENGTH setting
 
 ### Version 0.1
-    - Release
+    -  Initial release
 
 ## Author
   - Kevin _'Improv3d'_ G.
