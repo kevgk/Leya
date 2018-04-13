@@ -20,17 +20,17 @@
 		"read" => true,
 		"write" => true,
 		"create_row" => true,
-		"delete_row" => true,
-		"create_table" => true,
-		"delete_table" => true,
+		"delete_row" => false,
+		"create_table" => false,
+		"delete_table" => false,
 		"list_columns" => true,
 		"list_rows" => true,
 		"table_exist" => true,
-		"delete_column" => true,
+		"delete_column" => false,
 		"add_column" => true,
-		"rename_column" => true,
+		"rename_column" => false,
 		"row_exist" => true,
-		"exec" => true,
+		"exec" => false,
 		"read_where" => true,
 		"read_where_not" => true,
 		"read_where_greater" => true,
@@ -48,7 +48,7 @@
 		"file_size" => true,
 		"file_exists" => true,
 		// MISC
-		"mail" => true,
+		"mail" => false,
 		"hash" => true
 	);
 ?>
