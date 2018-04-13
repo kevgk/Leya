@@ -1,113 +1,78 @@
 ﻿<?php
 
-	#version 0.3.2b
 	require 'config.php';
 
-	if($pin > 0)
-	{
-		if($_GET["key"] != round(date("H") * $pin, 4))
-		{
-			die();
-		}
-	}
+	if (!empty($_GET["action"]) && $rights[$_GET["action"]]) {
 
-	if(!empty($_GET["action"]) && $rights[$_GET["action"]])
-	{
+		if (AHK_ONLY && $_SERVER['HTTP_USER_AGENT'] != 'AutoHotkey') exit();
 
-		if($_SERVER['HTTP_USER_AGENT'] != 'AutoHotkey' && AHK_ONLY) die();
-
-		$connection	= mysql_connect(SERVER, USER, PASSWORD);
-		if(!$connection)
-		{
-			die("Fehler: Es konnte keine Verbindung zum Server hergestellt werden.");
+		$mysqli	= new mysqli(SERVER, USER, PASSWORD, DATABASE);
+		if ($mysqli->connect_errno) {
+			exit("Fehler: Es konnte keine Verbindung zum Server hergestellt werden.");
 		}
 
-		mysql_select_db(DATABASE, $connection) or die("Fehler: Datenbank konnte nicht gefunden werden.");
-		
-		$table = mysql_real_escape_string($_GET["table"], $connection);
+		foreach($_GET as $key => $value) {
+			$_GET[$key] = $mysqli->escape_string($value);
+		}
 
-		switch($_GET["action"])
-		{
+		$table = $_GET["table"];
+
+		switch($_GET["action"]) {
 			case "read":
-				$row 	= mysql_real_escape_string($_GET["a"], $connection);
-				$column = mysql_real_escape_string($_GET["b"], $connection);
+				if (!empty($_GET["row"]) && !empty($_GET["column"])) {
+					$row = $_GET["row"];
+					$column = $_GET["column"];
+					$primaryKey = getPrimaryKey($table);
 
-				if(!empty($row) && !empty($column))
-				{				
-					$primaryKey = mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$rowExist	= mysql_fetch_array(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+					if (!rowExist($row, $primaryKey)) exit(imp_return(-1));
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row'");
+					$result = $query->fetch_array();
 
-					if($rowExist[0] == $row)
-					{
-						$query = mysql_query("SELECT $column FROM $table WHERE $primaryKey[4]='$row'");
-						$result = mysql_fetch_array($query);
-
-						if(!$query)
-						{
-							imp_return("0");
-						}
-						else
-						{
-							imp_return($result[0]);
-						}
-					}
-					else
-					{
-						imp_return("-1");
+					if (!$mysqli->errno) {
+						imp_return($result[0]);
 					}
 				}
 				break;
 
 			case "write":
-				$row 	= mysql_real_escape_string($_GET["a"], $connection);
-				$column = mysql_real_escape_string($_GET["b"], $connection);
-				$value 	= mysql_real_escape_string($_GET["c"], $connection);
+				$row = $_GET["a"];
+				$column = $_GET["b"];
+				$value = $_GET["c"];
 
-				if(!empty($row) && !empty($column))
-				{
-					$primaryKey = mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$rowExist 	= mysql_fetch_array(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+				if (!empty($row) && !empty($column)) {
+					$primaryKey = getPrimaryKey($table);
 
-					if($rowExist[0] == $row)
-					{
-						$write 		= mysql_query("UPDATE `$table` SET `$column`='$value' WHERE `$primaryKey[4]`='$row'");		
-						$success 	= mysql_fetch_array(mysql_query("SELECT `$column` FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+					if (rowExist($row, $primaryKey)) {
+						$write = $mysqli->query("UPDATE `$table` SET `$column`='$value' WHERE `$primaryKey`='$row'");
+						$success = $mysqli->query("SELECT `$column` FROM $table WHERE $primaryKey='$row' LIMIT 1")->fetch_array();
 
-						if($success[0] == $value)
-						{
-							imp_return("1");
+						if (!$mysqli->errno) {
+							imp_return(1);
 						}
 					}
-					else
-					{
-						imp_return("-1");
+					else {
+						imp_return(-1);
 					}
 				}
 				break;
 
 			case "create_row":
-				$row = mysql_real_escape_string($_GET["a"], $connection);
-				
-				if(!empty($row))
-				{
-					$primaryKey = mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$rowExist 	= mysql_num_rows(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+				$row = $_GET["a"];
 
-					if($rowExist != 0)
-					{
+				if (!empty($row)) {
+					$primaryKey = getPrimaryKey($table);
+
+					if (rowExist($row, $primaryKey)) {
 						imp_return("-1");
 					}
-					else
-					{
-						$create		= mysql_query("INSERT INTO $table ($primaryKey[4]) VALUES ('$row')");
-						$success 	= mysql_num_rows(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+					else {
+						$create		= $mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')");
+						$success 	= $mysqli->query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey='$row' LIMIT 1")->num_rows;
 
-						if($success != 0)
-						{
+						if ($success != 0) {
 							imp_return("1");
 						}
-						else
-						{
+						else {
 							imp_return("0");
 						}
 					}
@@ -115,91 +80,77 @@
 				break;
 
 			case "delete_row":
-				$row 			= mysql_real_escape_string($_GET["row"], $connection);
-				$primaryKey 	= mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-				$rowExist 		= mysql_num_rows(mysql_query("SELECT * FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+				$row = $_GET["row"];
+				$primaryKey = getPrimaryKey($table);
 
-				if($rowExist != 0)
-				{
-					$delete		= mysql_query("DELETE FROM $table WHERE $primaryKey[4]='$row'");
-					$success 	= mysql_num_rows(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+				if (rowExist($row, $primaryKey)) {
+					$delete		= $mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'");
+					$success 	= $mysqli->query("SELECT $primaryKey FROM $table WHERE $primaryKey='$row' LIMIT 1")->num_rows;
 
-					if($success != 0)
-					{
+					if ($success != 0) {
 						imp_return(0);
 					}
-					else
-					{
+					else {
 						imp_return(1);
 					}
 				}
-				else
-				{
+				else {
 					imp_return("-1");
 				}
 				break;
 
 			case "create_table":
-				$name	 	= mysql_real_escape_string($_GET["name"], $connection);
-				$tableExist = mysql_num_rows(mysql_query("SHOW TABLES LIKE '$name'"));
+				$name = $_GET["name"];
+				$tableExist = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
-				if($tableExist !== 1)
-				{
-					$columns 	= mysql_real_escape_string($_GET["columns"], $connection);
-					$args 		= explode(",", $columns);
-					$queryStr 	= "CREATE TABLE $name (";
+				if ($tableExist !== 1) {
+					$columns = $_GET["columns"];
+					$args = explode(",", $columns);
+					$queryStr = "CREATE TABLE $name (";
 
 					foreach($args as $val) {
 						$val = str_ireplace("alter", '`alter`', $val);
 						$queryStr .= "$val VARCHAR (".FIELD_LENGTH."),";
 					}
 
-					$queryStr  	.= "PRIMARY  KEY (`$args[0]`))";
-					$create 	= mysql_query($queryStr);
-					$success 	= mysql_num_rows(mysql_query("SHOW TABLES LIKE '$name'"));
+					$queryStr .= "PRIMARY  KEY (`$args[0]`))";
+					$create = $mysqli->query($queryStr);
+					$success = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
-					if($success)
-					{
+					if ($success) {
 						imp_return(1);
 					}
-					else
-					{
-						imp_return("0");
+					else {
+						imp_return(0);
 					}
 				}
-				else
-				{
-					imp_return("-1");
+				else {
+					imp_return(-1);
 				}
 				break;
 
 			case "delete_table":
-				$name	 	= mysql_real_escape_string($_GET["name"], $connection);
-				$tableExist	= mysql_num_rows(mysql_query("SHOW TABLES LIKE '$name'"));
+				$name = $_GET["name"];
+				$tableExist = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
-				if($tableExist)
-				{
-					$delete 	= mysql_query("DROP TABLE $name");
-					$success 	= mysql_num_rows(mysql_query("SHOW TABLES LIKE '$name'"));
-					if($success !== 1)
-					{
+				if ($tableExist) {
+					$delete = $mysqli->query("DROP TABLE $name");
+					$success = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
+					if ($success !== 1) {
 						imp_return(1);
 					}
-					else
-					{
-						imp_return("0");
+					else {
+						imp_return(0);
 					}
 				}
-				else
-				{
-					imp_return("-1");
+				else {
+					imp_return(-1);
 				}
 				break;
 
 			case "list_columns":
-					$list = mysql_query("SHOW COLUMNS FROM $table");
-					while($column = mysql_fetch_array($list))
-					{
+					$list = $mysqli->query("SHOW COLUMNS FROM $table");
+					while($column = $list->fetch_array()) {
 						$columns .= $column[0] . ",";
 					}
 					$columns = substr($columns, 0, -1);
@@ -207,12 +158,11 @@
 				break;
 
 			case "list_rows":
-				$primaryKey = mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-				$rows 		= mysql_query("SELECT $primaryKey[4] FROM $table");
+				$primaryKey = getPrimaryKey($table);
+				$rows = $mysqli->query("SELECT $primaryKey FROM $table");
 
-				while($row = mysql_fetch_array($rows))
-				{
-					$output .=  $row[$primaryKey[4]] . ", ";
+				while($row = $rows->fetch_array()) {
+					$output .= $row[$primaryKey] . ", ";
 				}
 
 				$output = substr($output, 0, -2);
@@ -220,338 +170,279 @@
 				break;
 
 			case "table_exist":
-				$name = mysql_real_escape_string($_GET["name"], $connection);
-				if(mysql_num_rows(mysql_query("SHOW TABLES LIKE '".$name."'")))
-				{
+				$name = $_GET["name"];
+				if ($mysqli->query("SHOW TABLES LIKE '".$name."'")->num_rows) {
 					imp_return(1);
 				}
 				break;
 
 			case "delete_column":
-				$column = mysql_real_escape_string($_GET["column"], $connection);
+				$column = $_GET["column"];
 
-				if(!empty($column))
-				{
-					$columnExist	= mysql_num_rows(mysql_query("SELECT $column FROM $table LIMIT 1"));
-					
-					if($columnExist)
-					{
-						$delete 	= mysql_query("ALTER TABLE $table DROP $column");
-						$success	= mysql_num_rows(mysql_query("SELECT $column FROM $table LIMIT 1"));
-						if($success != 1)
-						{
+				if (!empty($column)) {
+					$columnExist	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
+
+					if ($columnExist) {
+						$delete 	= $mysqli->query("ALTER TABLE $table DROP $column");
+						$success	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
+						if ($success != 1) {
 							imp_return(1);
 						}
-						else
-						{
-							imp_return("0");
+						else {
+							imp_return(0);
 						}
 					}
-					else
-					{
-						imp_return("-1");
+					else {
+						imp_return(-1);
 					}
-
 				}
 				break;
-		
+
 			case "add_column":
-				$column = mysql_real_escape_string($_GET["column"], $connection);
-				
-				if(!empty($column))
-				{
-					$columnExist = mysql_num_rows(mysql_query("SELECT $column FROM $table LIMIT 1"));
-					
-					if($columnExist == 1)
-					{
-						imp_return("-1");
+				$column = $_GET["column"];
+
+				if (!empty($column)) {
+					$columnExist = $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
+
+					if ($columnExist == 1) {
+						imp_return(-1);
 					}
-					else
-					{
-						$add 		= mysql_query("ALTER TABLE $table ADD $column VARCHAR(128)");
-						$success 	= mysql_num_rows(mysql_query("SELECT $column FROM $table LIMIT 1"));
-						
-						if($success)
-						{
+					else {
+						$add 		= $mysqli->query("ALTER TABLE $table ADD $column VARCHAR(128)");
+						$success 	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
+
+						if ($success) {
 							imp_return(1);
 						}
-						else
-						{
-							imp_return("0");
+						else {
+							imp_return(0);
 						}
 					}
-				}	
+				}
 				break;
 
 			case "rename_column":
-				$column 		= mysql_real_escape_string($_GET["column"], $connection);
-				$newname 		= mysql_real_escape_string($_GET["newname"], $connection);
-			
-				if(!empty($column) && !empty($newname))
-				{
-					$primaryKey 	= mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$columnExist	= mysql_num_rows(mysql_query("SELECT $column FROM $table LIMIT 1"));
-					
-					if($columnExist)
-					{		
-						$rename		= mysql_query("ALTER TABLE $table CHANGE $column $newname VARCHAR(128)");
-						$success	= mysql_num_rows(mysql_query("SELECT $newname FROM $table LIMIT 1")); //yolo
-						
-						if($success == 1)
-						{
-							imp_return("1");
+				$column = $_GET["column"];
+				$newname = $_GET["newname"];
+
+				if (!empty($column) && !empty($newname)) {
+					$columnExist	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
+
+					if ($columnExist) {
+						$rename		= $mysqli->query("ALTER TABLE $table CHANGE $column $newname VARCHAR(128)");
+						$success	= $mysqli->query("SELECT $newname FROM $table LIMIT 1")->num_rows;
+
+						if ($success == 1) {
+							imp_return(1);
 						}
-						else
-						{
-							imp_return("0");
+						else {
+							imp_return(0);
 						}
 					}
-					else
-					{
-						imp_return("-1");
+					else {
+						imp_return(-1);
 					}
 				}
 				break;
 
 			case "row_exist":
-				$row = mysql_real_escape_string($_GET["row"], $connection);
-				
-				if(!empty($row))
-				{
-					$primaryKey 	= mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$rowExist 		= mysql_num_rows(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
-					
-					if($rowExist != 0)
-					{
+				$row = $_GET["row"];
+
+				if (!empty($row)) {
+					$primaryKey = getPrimaryKey($table);
+
+					if (rowExist($row, $primaryKey)) {
 						imp_return(1);
 					}
-					else
-					{
-						imp_return("0");
+					else {
+						imp_return(0);
 					}
 				}
 				break;
 
 			case "exec":
 				$query	= $_GET['query'];
-				$result = mysql_query($query);
-				$result = mysql_fetch_assoc($result);
-				
-				if(is_array($result))
-				{
+				$result = $mysqli->query($query)->fetch_assoc();
+
+				if (is_array($result)) {
 					$output = "";
-					for ($i = 0, $x = sizeof($result); $i < $x; ++$i)
-					{
+					for ($i = 0, $x = sizeof($result); $i < $x; ++$i) {
 						$output .= key($result)." = ".current($result).", \n";
 						next($result);
 					}
 					imp_return($output);
 				}
-				else
-				{
-					if(mysql_affected_rows($result) >= 0)
-					{
+				else 	{
+					if ($result->affected_rows >= 0) {
 						imp_return(1);
 					}
 				}
 				break;
 
 			case "mail":
-				$to 		= $_GET["to"];
-				$subject 	= $_GET["subject"];
-				$message 	= $_GET["message"];
-				
-				if(!empty($to) && !empty($message))
-				{
+				$to = $_GET["to"];
+				$subject = $_GET["subject"];
+				$message = $_GET["message"];
+
+				if (!empty($to) && !empty($message)) {
 					$mail = mail($to, $subject, $message, "From: ".MAIL_SENDER);
-					imp_return(($mail) ? 1 : 0);	
+					imp_return(($mail) ? 1 : 0);
 				}
 				break;
 
-			case "hash":			
+			case "hash":
 				$str	= $_GET["str"];
 				$algo	= $_GET["algo"];
-				
-				if(!empty($str) && !empty($algo))
-				{
-					if(in_array($algo, hash_algos()))
+
+				if (!empty($str) && !empty($algo)) {
+					if (in_array($algo, hash_algos()))
 						imp_return(hash($algo, $str));
 				}
 				break;
-				
+
 			case "read_where":
-				$column_where 	= mysql_real_escape_string($_GET["where"], 	$connection);
-				$row_where 		= mysql_real_escape_string($_GET["is"], 	$connection);
-				$column 		= mysql_real_escape_string($_GET["column"], $connection);
+				$column_where 	= $_GET["where"];
+				$row_where 		= $_GET["is"];
+				$column 		= $_GET["column"];
 
-				if(!empty($column_where) && !empty($row_where) && !empty($column))
-				{
-					$query = mysql_query("SELECT $column FROM $table WHERE $column_where='$row_where'");
-					
-					if(!$query)
-					{
-						imp_return("0");
+				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where='$row_where'");
+
+					if (!$query) {
+						imp_return(0);
 					}
-					else
-					{
-						while($res = mysql_fetch_array($query))
-						{
+					else {
+						while($res = $query->fetch_array()) {
 							$str .= $res[0] . ", ";
 						}
 						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
-			
+
 			case "read_where_not":
-				$column_where 	= mysql_real_escape_string($_GET["where"], 	$connection);
-				$row_where 		= mysql_real_escape_string($_GET["is"], 	$connection);
-				$column 		= mysql_real_escape_string($_GET["column"], $connection);
+				$column_where = $_GET["where"];
+				$row_where = $_GET["is"];
+				$column = $_GET["column"];
 
-				if(!empty($column_where) && !empty($row_where) && !empty($column))
-				{
-					$query = mysql_query("SELECT $column FROM $table WHERE $column_where!='$row_where'");
-					
-					if(!$query)
-					{
-						imp_return("0");
+				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where!='$row_where'");
+
+					if (!$query) {
+						imp_return(0);
 					}
-					else
-					{
-						while($res = mysql_fetch_array($query))
-						{
+					else {
+						while($res = $query->fetch_array()) {
 							$str .= $res[0] . ", ";
 						}
 						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
-				
+
 			case "read_where_greater":
-				$column_where 	= mysql_real_escape_string($_GET["where"], 	$connection);
-				$row_where 		= mysql_real_escape_string($_GET["is"], 	$connection);
-				$column 		= mysql_real_escape_string($_GET["column"], $connection);
+				$column_where = $_GET["where"];
+				$row_where = $_GET["is"];
+				$column = $_GET["column"];
 
-				if(!empty($column_where) && !empty($row_where) && !empty($column))
-				{
-					$query = mysql_query("SELECT $column FROM $table WHERE $column_where > '$row_where'");
-					
-					if(!$query)
-					{
-						imp_return("0");
+				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where > '$row_where'");
+
+					if (!$query) {
+						imp_return(0);
 					}
-					else
-					{
-						while($res = mysql_fetch_array($query))
-						{
+					else {
+						while($res = $query->fetch_array()) {
 							$str .= $res[0] . ", ";
 						}
 						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
-				
+
 			case "read_where_less":
-				$column_where 	= mysql_real_escape_string($_GET["where"], 	$connection);
-				$row_where 		= mysql_real_escape_string($_GET["is"], 	$connection);
-				$column 		= mysql_real_escape_string($_GET["column"], $connection);
+				$column_where = $_GET["where"];
+				$row_where = $_GET["is"];
+				$column = $_GET["column"];
 
-				if(!empty($column_where) && !empty($row_where) && !empty($column))
-				{
-					$query = mysql_query("SELECT $column FROM $table WHERE $column_where < '$row_where'");
-					
-					if(!$query)
-					{
-						imp_return("0");
+				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where < '$row_where'");
+
+					if (!$query) {
+						imp_return(0);
 					}
-					else
-					{
-						while($res = mysql_fetch_array($query))
-						{
+					else {
+						while($res = $query->fetch_array()) {
 							$str .= $res[0] . ", ";
 						}
 						imp_return(substr($str, 0, -2));
 					}
 				}
 				break;
-				
+
 			case "compare":
-				$row 		= mysql_real_escape_string($_GET["a"], $connection);
-				$column 	= mysql_real_escape_string($_GET["b"], $connection);
-				$compare 	= $_GET["c"];
-				
-				if(!empty($row) && !empty($column) && !empty($compare))
-				{				
-					$primaryKey = mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$rowExist	= mysql_fetch_array(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
-					
-					if($rowExist[0] == $row)
-					{
-						$query = mysql_query("SELECT $column FROM $table WHERE $primaryKey[4]='$row'");
-						$result = mysql_fetch_array($query);
-						
-						if($result[0] == $compare)
-						{
+				$row = $_GET["a"];
+				$column = $_GET["b"];
+				$compare = $_GET["c"];
+
+				if (!empty($row) && !empty($column) && !empty($compare)) {
+					$primaryKey = getPrimaryKey();
+
+					if (rowExist($row, $primaryKey)) {
+						$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row'");
+						$result = $query->fetch_array();
+
+						if ($result[0] == $compare) {
 							imp_return(1);
 						}
-						else
-						{
+						else {
 							imp_return("0");
 						}
 					}
-					else
-					{
+					else {
 						imp_return("-1");
 					}
 				}
 				break;
-				
+
 			case "count_rows":
-				$result = mysql_query("SELECT count(1) FROM $table");
-				$row 	= mysql_fetch_array($result);
-				
+				$result = $mysqli->query("SELECT count(1) FROM $table");
+				$row 	= $result->fetch_array();
+
 				imp_return($row[0]);
 				break;
 
 			case "get_row":
-				$row = mysql_real_escape_string($_GET["row"], $connection);
-				
-				if(!empty($row))
-				{				
-					$primaryKey 	= mysql_fetch_array(mysql_query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'"));
-					$rowExist		= mysql_fetch_array(mysql_query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey[4]='$row' LIMIT 1"));
+				$row = $_GET["row"];
 
-					if($rowExist[0] == $row)
-					{
-						$query = mysql_query("SELECT * FROM $table WHERE $primaryKey[4]='$row'");
-						$result = mysql_fetch_assoc($query);
-						
-						foreach($result as $column => $value)
-						{
+				if (!empty($row)) {
+					$primaryKey 	= getPrimaryKey();
+
+					if (rowExist($row, $primaryKey)) {
+						$query = $mysqli->query("SELECT * FROM $table WHERE $primaryKey='$row'");
+						$result = $query->fetch_assoc();
+
+						foreach($result as $column => $value) {
 							$str .= $column . ": " . $value . ", ";
 						}
-						
+
 						imp_return(substr($str, 0, -2));
 					}
-					else
-					{
+					else {
 						imp_return("-1");
 					}
 				}
 				break;
-				
-			case "check_table":
-				$query 	= mysql_query("SELECT * FROM $table");
-				
 
-				while($content = mysql_fetch_assoc($query))
-				{
+			case "check_table":
+				$query 	= $mysqli->query("SELECT * FROM $table");
+				while($content = $query->fetch_assoc()) {
 					$str .= serialize($content);
 				}
-				
-				$query = mysql_query("SELECT count(1) FROM $table");
-				$rows 	= mysql_fetch_array($query);
-				
+
+				$query = $mysqli->query("SELECT count(1) FROM $table");
+				$rows 	= $query->fetch_array();
+
 				$str .= $rows[0];
 
 				imp_return(md5($str));
@@ -562,8 +453,7 @@
 				$content = $_GET['content'];
 				$mode = $_GET['mode'];
 
-				switch ($mode)
-				{
+				switch ($mode) {
 					case 'overwrite':
 						$handle = fopen($file, 'w');
 						break;
@@ -572,16 +462,14 @@
 						$handle = fopen($file, 'a');
 						break;
 				}
-				
+
 				$s = fwrite($handle, $content);
 				fclose($handle);
-				
-				if(empty($content) && file_exists($file))
-				{
+
+				if (empty($content) && file_exists($file)) {
 					imp_return(1);
 				}
-				else
-				{
+				else {
 					($s>0) ? imp_return(1) : imp_return(0);
 				}
 
@@ -638,16 +526,22 @@
 
 				imp_return(filesize($file)/$divider);
 				break;
-
-			default:
-				die();	
 		}
-		mysql_close($connection);
+		$mysql->close();
 	}
 
-	function imp_return($val)
-	{
+	function imp_return($val) {
 		echo '<!--imp_return="'.$val.'"-->';
+	}
+
+	function getPrimaryKey($table) {
+		global $mysqli;
+		return $mysqli->query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'")->fetch_array()[4];
+	}
+
+	function rowExist ($row, $primaryKey) {
+		global $mysqli, $table;
+		return $mysqli->query("SELECT * FROM $table WHERE $primaryKey='$row' LIMIT 1")->num_rows;
 	}
 
 ?>
