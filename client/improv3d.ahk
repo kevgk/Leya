@@ -4,7 +4,7 @@
 * Improv3d MySQL/PHP API
 */
 
-;Der Pfad der improv3d.php auf ihrem Server
+; improv3d.php path on your server
 global imp_server := "http://yourdomain.de/improv3d.php"
 
 ;-------------------------------------------------------------------------------------------
