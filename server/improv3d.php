@@ -35,9 +35,9 @@
 				break;
 
 			case "write":
-				$row = $_GET["a"];
-				$column = $_GET["b"];
-				$value = $_GET["c"];
+				$row = $_GET["row"];
+				$column = $_GET["column"];
+				$value = $_GET["value"];
 
 				if (!empty($row) && !empty($column)) {
 					$primaryKey = getPrimaryKey($table);
@@ -57,7 +57,7 @@
 				break;
 
 			case "create_row":
-				$row = $_GET["a"];
+				$row = $_GET["row"];
 
 				if (!empty($row)) {
 					$primaryKey = getPrimaryKey($table);
@@ -130,7 +130,7 @@
 				break;
 
 			case "delete_table":
-				$name = $_GET["name"];
+				$name = $_GET["table"];
 				$tableExist = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
 				if ($tableExist) {
@@ -381,9 +381,9 @@
 				break;
 
 			case "compare":
-				$row = $_GET["a"];
-				$column = $_GET["b"];
-				$compare = $_GET["c"];
+				$row = $_GET["row"];
+				$column = $_GET["column"];
+				$compare = $_GET["value"];
 
 				if (!empty($row) && !empty($column) && !empty($compare)) {
 					$primaryKey = getPrimaryKey();

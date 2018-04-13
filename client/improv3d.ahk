@@ -14,54 +14,54 @@ imp_read(table, row, column) {
 	return imp_query(query)
 }
 
-imp_read_where(table, a, b, c) {
-	query := imp_server "?action=read_where&table=" table "&where=" a "&is=" b "&column=" c
+imp_read_where(table, conditionColumn, conditionValue, column) {
+	query := imp_server "?action=read_where&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column
 	return imp_query(query)
 
 }
 
-imp_read_where_not(table, a, b, c) {
-	query := imp_server "?action=read_where_not&table=" table "&where=" a "&is=" b "&column=" c
+imp_read_where_not(table, conditionColumn, conditionValue, column) {
+	query := imp_server "?action=read_where_not&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column
 	return imp_query(query)
 }
 
-imp_read_where_greater(table, a, b, c) {
-	query := imp_server "?action=read_where_greater&table=" table "&where=" a "&is=" b "&column=" c
+imp_read_where_greater(table, conditionColumn, conditionValue, column) {
+	query := imp_server "?action=read_where_greater&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column
 	return imp_query(query)
 }
 
-imp_read_where_less(table, a, b, c) {
-	query := imp_server "?action=read_where_less&table=" table "&where=" a "&is=" b "&column=" c
+imp_read_where_less(table, conditionColumn, conditionValue, column) {
+	query := imp_server "?action=read_where_less&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column
 	return imp_query(query)
 }
 
-imp_write(table, a, b, c) {
-	query := imp_server "?action=write&table=" table "&a=" a "&b=" b "&c=" c
+imp_write(table, row, column, value) {
+	query := imp_server "?action=write&table=" table "&row=" row "&column=" column "&value=" value
 	return imp_query(query)
 }
 
-imp_compare(table, a, b, c) {
-	query := imp_server "?action=compare&table=" table "&a=" a "&b=" b "&c=" c
+imp_compare(table, row, column, value) {
+	query := imp_server "?action=compare&table=" table "&row=" row "&column=" column "&value=" value
 	return imp_query(query)
 }
 
-imp_create_row(table, a) {
-	query := imp_server "?action=create_row&table=" table "&a=" a
+imp_create_row(table, row) {
+	query := imp_server "?action=create_row&table=" table "&row=" row
 	return imp_query(query)
 }
 
-imp_delete_row(table, a) {
-	query := imp_server "?action=delete_row&table=" table "&row=" a
+imp_delete_row(table, row) {
+	query := imp_server "?action=delete_row&table=" table "&row=" row
 	return imp_query(query)
 }
 
-imp_create_table(table, a) {
-	query := imp_server "?action=create_table&name=" table "&columns=" a
+imp_create_table(table, columns) {
+	query := imp_server "?action=create_table&name=" table "&columns=" columns
 	return imp_query(query)
 }
 
 imp_delete_table(table) {
-	query := imp_server "?action=delete_table&name=" table
+	query := imp_server "?action=delete_table&table=" table
 	return imp_query(query)
 }
 
@@ -75,28 +75,28 @@ imp_list_rows(table) {
 	return imp_query(query)
 }
 
-imp_add_column(table, a) {
-	query := imp_server "?action=add_column&table=" table "&column=" a
+imp_add_column(table, column) {
+	query := imp_server "?action=add_column&table=" table "&column=" column
 	return imp_query(query)
 }
 
-imp_delete_column(table, a) {
-	query := imp_server "?action=delete_column&table=" table "&column=" a
+imp_delete_column(table, column) {
+	query := imp_server "?action=delete_column&table=" table "&column=" column
 	return imp_query(query)
 }
 
-imp_rename_column(table, a, b) {
-	query := imp_server "?action=rename_column&table=" table "&column=" a "&newname=" b
+imp_rename_column(table, column, value) {
+	query := imp_server "?action=rename_column&table=" table "&column=" column "&newname=" value
 	return imp_query(query)
 }
 
-imp_row_exist(table, a) {
-	query := imp_server "?action=row_exist&table=" table "&row=" a
+imp_row_exist(table, row) {
+	query := imp_server "?action=row_exist&table=" table "&row=" row
 	return imp_query(query)
 }
 
-imp_exec(a) {
-	query := imp_server "?action=exec&query=" a
+imp_exec(code) {
+	query := imp_server "?action=exec&query=" code
 	return imp_query(query)
 }
 
