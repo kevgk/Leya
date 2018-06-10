@@ -1,7 +1,7 @@
 ﻿#NoEnv
 
 /*!
-* Improv3d MySQL/PHP API
+* Improv3d MySQL/PHP API 0.4.1
 */
 
 ; improv3d.php path on your server
@@ -174,9 +174,7 @@ imp_file_size(file, unit = "b") {
 }
 
 imp_query(a) {
-	urlDownloadToFile, %a%, %A_Temp%/response.tmp
-	FileRead, response, %A_Temp%/response.tmp
-	FileDelete, %A_Temp%/response.tmp
+	response := URLDownloadToVar(a)
 	if(response) {
 		regex = <!--imp_return="(.*)"-->
 		response := RegExMatch(response, regex, match)
@@ -184,4 +182,11 @@ imp_query(a) {
 	}
 	else
 		return 0
+}
+
+; Credits to maestrith for the URLDownloadToVar function
+; https://autohotkey.com/boards/viewtopic.php?t=3291
+URLDownloadToVar(url){
+	obj:=ComObjCreate("WinHttp.WinHttpRequest.5.1"),obj.Open("GET",url),obj.Send()
+	return obj.status=200?obj.ResponseText:""
 }
