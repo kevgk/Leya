@@ -1,7 +1,7 @@
 ﻿#NoEnv
 
 /*!
-* Improv3d MySQL/PHP API 0.4.1
+* Improv3d MySQL/PHP API 0.4.2
 */
 
 ; improv3d.php path on your server

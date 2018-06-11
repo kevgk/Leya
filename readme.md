@@ -1,4 +1,4 @@
-# :zap: Improv3d Api v0.4.1
+# :zap: Improv3d Api v0.4.2
 ## Requirements
     - Webserver(PHP4+)
     - MySQL database
@@ -9,10 +9,12 @@
     - Open 'improv3d.ahk' and fill in you serveradress.
 
 ## Changelog
+### Version 0.4.2
+    - Optimized and reduced db calls in imp_write, imp_delete_row and imp_create_row.
+
 ### Version 0.4.1
     - Switched from URLDownloadToFile to URLDownloadToVar, to fix useragent restrictions on some servers.
 *Credits to maestrith for the function
-
 
 ### Version 0.4
     - Switched from MySQL to MySQLi
