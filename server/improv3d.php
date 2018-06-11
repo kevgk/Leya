@@ -66,14 +66,8 @@
 						imp_return("-1");
 					}
 					else {
-						$create		= $mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')");
-						$success 	= $mysqli->query("SELECT $primaryKey[4] FROM $table WHERE $primaryKey='$row' LIMIT 1")->num_rows;
-
-						if ($success != 0) {
-							imp_return("1");
-						}
-						else {
-							imp_return("0");
+						if ($mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')")) {
+							imp_return(1);
 						}
 					}
 				}
