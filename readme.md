@@ -1,4 +1,4 @@
-# :zap: Improv3d Api v0.4
+# :zap: Improv3d Api v0.4.1
 ## Requirements
     - Webserver(PHP4+)
     - MySQL database
