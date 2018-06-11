@@ -1,5 +1,9 @@
 ﻿<?php
 
+	/**
+	 *  Improv3d MySQL/PHP API 0.4.2
+	 */
+
 	require 'config.php';
 
 	if (!empty($_GET["action"]) && $rights[$_GET["action"]]) {
