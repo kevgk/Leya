@@ -84,13 +84,7 @@
 				$primaryKey = getPrimaryKey($table);
 
 				if (rowExist($row, $primaryKey)) {
-					$delete		= $mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'");
-					$success 	= $mysqli->query("SELECT $primaryKey FROM $table WHERE $primaryKey='$row' LIMIT 1")->num_rows;
-
-					if ($success != 0) {
-						imp_return(0);
-					}
-					else {
+					if ($mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'")) {
 						imp_return(1);
 					}
 				}
