@@ -43,10 +43,7 @@
 					$primaryKey = getPrimaryKey($table);
 
 					if (rowExist($row, $primaryKey)) {
-						$write = $mysqli->query("UPDATE `$table` SET `$column`='$value' WHERE `$primaryKey`='$row'");
-						$success = $mysqli->query("SELECT `$column` FROM $table WHERE $primaryKey='$row' LIMIT 1")->fetch_array();
-
-						if (!$mysqli->errno) {
+						if ($mysqli->query("UPDATE `$table` SET `$column`='$value' WHERE `$primaryKey`='$row'")) {
 							imp_return(1);
 						}
 					}
