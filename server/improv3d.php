@@ -1,18 +1,28 @@
 ﻿<?php
 
-	/**
-	 *  Improv3d MySQL/PHP API 0.4.2
-	 */
+	/** ---------------------------------------------------------------------------
+	 *
+	 * Improv3d MySQL/PHP API
+	 * Version: 0.5
+	 * https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
+	 *
+	 * You should not edit this file,
+	 * you can change your settings in the config.php file.
+	 *
+	 * ---------------------------------------------------------------------------*/
 
+
+	error_reporting(0);
+	header_remove("x-powered-by");
 	require 'config.php';
 
-	if (!empty($_GET["action"]) && $rights[$_GET["action"]]) {
 
-		if (AHK_ONLY && $_SERVER['HTTP_USER_AGENT'] != 'AutoHotkey') exit();
+	if (!empty($_GET["action"]) && $rights[$_GET["action"]] && isAuthorized()) {
 
 		$mysqli	= new mysqli(SERVER, USER, PASSWORD, DATABASE);
 		if ($mysqli->connect_errno) {
-			exit("Fehler: Es konnte keine Verbindung zum Server hergestellt werden.");
+			imp_error('Can`t connect to database.');
+			exit();
 		}
 
 		foreach($_GET as $key => $value) {
@@ -523,12 +533,34 @@
 		echo '<!--imp_return="'.$val.'"-->';
 	}
 
+	function imp_error($val) {
+		echo '<!--imp_error="Error: '.$val.'"-->';
+	}
+
+	function isAuthorized() {
+		global $keys;
+		$key = $_GET['key'];
+
+		if (in_array($key, $keys) || empty($keys)) {
+			return true;
+		}
+		else {
+			if (SHOW_AUTH_ERROR) {
+				imp_error('Not authorized.');
+			}
+			else {
+				header("HTTP/1.0 404 Not Found");
+				exit();
+			}
+		}
+	}
+
 	function getPrimaryKey($table) {
 		global $mysqli;
 		return $mysqli->query("SHOW KEYS FROM $table WHERE Key_name='PRIMARY'")->fetch_array()[4];
 	}
 
-	function rowExist ($row, $primaryKey) {
+	function rowExist($row, $primaryKey) {
 		global $mysqli, $table;
 		return $mysqli->query("SELECT * FROM $table WHERE $primaryKey='$row' LIMIT 1")->num_rows;
 	}

@@ -1,13 +1,22 @@
-﻿#NoEnv
+﻿; ---------------------------------------------------------------------------
+;
+;		Improv3d MySQL/PHP API
+;		Version: 0.5
+;		https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
+;
+; ---------------------------------------------------------------------------
 
-/*!
-* Improv3d MySQL/PHP API 0.4.2
-*/
+#NoEnv
 
-; improv3d.php path on your server
-global imp_server := "http://yourdomain.de/improv3d.php"
+; The path of the improv3d.php on your server.
+; The url needs to start with http or https.
+global imp_server := "http://yourserver.de/improv3d.php"
 
-;-------------------------------------------------------------------------------------------
+; The key you set in the config.php on your server
+; If you're not using a key, you can leave this variable empty.
+global imp_key := ""
+
+;---------------------------------------------------------------------------
 
 imp_read(table, row, column) {
 	query := imp_server "?action=read&table=" table "&row=" row "&column=" column
@@ -174,19 +183,30 @@ imp_file_size(file, unit = "b") {
 }
 
 imp_query(a) {
-	response := URLDownloadToVar(a)
-	if(response) {
-		regex = <!--imp_return="(.*)"-->
-		response := RegExMatch(response, regex, match)
-		return match1
-	}
+	response := URLDownloadToVar(a "&key=" imp_key)
+	error := imp_get_error(response)
+	if error
+		return error
 	else
-		return 0
+		return imp_get_response(response)
+}
+
+imp_get_response(response) {
+	pattern = <!--imp_return="(.*)"-->
+	RegExMatch(response, pattern, match)
+	return match1
+}
+
+imp_get_error(response) {
+	pattern = <!--imp_error="(.*)"-->
+	RegExMatch(response, pattern, match)
+	return match1
 }
 
 ; Credits to maestrith for the URLDownloadToVar function
-; https://autohotkey.com/boards/viewtopic.php?t=3291
-URLDownloadToVar(url){
+; https://autohotkey.com/boards/viewtopic.php?t=329
+
+URLDownloadToVar(url) {
 	obj:=ComObjCreate("WinHttp.WinHttpRequest.5.1"),obj.Open("GET",url),obj.Send()
 	return obj.status=200?obj.ResponseText:""
 }

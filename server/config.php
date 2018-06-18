@@ -1,20 +1,62 @@
 <?php
-	error_reporting(0);
 
-	/*************************************************************
-	* SERVER SETTINGS
-	**************************************************************/
-	DEFINE ("SERVER", "yourserver");
-	DEFINE ("USER", "yourusername");
-	DEFINE ("PASSWORD", "yourpassword");
-	DEFINE ("DATABASE", "yourdatabase");
-	DEFINE ("FIELD_LENGTH", 64);
-	DEFINE ("MAIL_SENDER", "example@yourserver.de");
-	DEFINE ("AHK_ONLY", false);
+	/** ---------------------------------------------------------------------------
+	 *
+	 * 	Improv3d MySQL/PHP API
+	 * 	Version: 0.5
+	 * 	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
+	 *
+	 * ---------------------------------------------------------------------------*/
 
-	/*************************************************************
-	* PERMISSIONS
-	**************************************************************/
+	/**
+	 * Basic configuration
+	 * - SERVER: 	Your mysql-server, in many cases this is localhost
+	 * - USER: 		Your database user
+	 * - PASSWORD: Your database password
+	 * - DATABASE: The mysql database you want to use
+	 *
+	 * - FIELD_LENGTH: The length of a field, when you create a new column
+	 * - MAIL_SENDER:  The email-address you want to display, when you send emails via the api
+	 * - SHOW_AUTH_ERROR: Show unauthorized users an error or nothing (404)
+	 */
+
+	define("SERVER", "localhost");
+	define("USER", "");
+	define("PASSWORD", "");
+	define("DATABASE", "");
+	define("FIELD_LENGTH", 64);
+	define("MAIL_SENDER", "example@yourserver.de");
+	define("SHOW_AUTH_ERROR", true);
+
+
+	/**
+	 * Api keys
+	 * You can add multiple keys, for example for different users.
+	 * This helps to protect the api from unauthorized access.
+	 * If you don't want to use keys, just leave the variable empty.
+	 *
+	 * Example for one user:
+	 * $keys = [
+	 * 	'your-key-in-here'
+	 * ];
+	 *
+	 * Example for multiple users:
+	 * $keys = [
+	 * 	'your-first-key-in-here',
+	 * 	'your-second-key-here
+	 * ];
+	 */
+
+	$keys = [
+
+	];
+
+
+
+	/**
+	 * Permissions
+	 */
+
 	$rights = array(
 		// MYSQL
 		"read" => true,
