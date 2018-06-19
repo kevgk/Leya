@@ -13,13 +13,13 @@ This version brings breaking changes with it and is not backwards compatible.
 
     - Refactored the autohotkey part into a class (commands are now called like this: imp.get())
     - Changed all commands to camelCase
-    - Removed imp_read, use impGet
-    - Removed imp_write, use impSet
+    - Removed imp_read, use imp.get
+    - Removed imp_write, use imp.set
     - Removed imp_read_where
     - Removed imp_read_where_not
     - Removed imp_read_where_greater
     - Removed imp_read_where_less
-    - Added impGetWhere, wich accepts a list of operators, eg. `=, !=, >, <, <=, >=`
+    - Added imp.getWhere, wich accepts a list of operators, eg. `=, !=, >, <, <=, >=`
 
 ### Version 0.6
     - You can now assign specific permissions to keys
