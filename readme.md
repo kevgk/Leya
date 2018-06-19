@@ -1,4 +1,4 @@
-# :zap: Improv3d Api v0.6
+# :zap: Improv3d Api v1.0
 ## Requirements
     - Webserver(PHP4+)
     - MySQL database
@@ -6,9 +6,20 @@
 ## Installation
     - Open 'config.php', fill in your server data and adjust permissions.
     - Upload the 'improv3d.php' and 'config.php' files.
-    - Open 'improv3d.ahk' and fill in you serveradress.
 
 ## Changelog
+### Version 1.0
+    - This version brings breaking changes with it
+    - Refactored the autohotkey part into a class (commands are now called like this: imp.get())
+    - Changed all commands to camelCase
+    - Removed imp_read, use imp_get
+    - Removed imp_write, use imp_set
+    - Removed imp_read_where
+    - Removed imp_read_where_not
+    - Removed imp_read_where_greater
+    - Removed imp_read_where_less
+    - Added imp_get_where, wich accepts a list of operators, eg. `=, !=, >, <, <=, >=`
+
 ### Version 0.6
     - You can now assign specific permissions to keys
     - Added alias imp_get for imp_read
