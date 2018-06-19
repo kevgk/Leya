@@ -11,6 +11,8 @@
 ## Changelog
 ### Version 0.6
     - You can now assign specific permissions to keys
+    - Added alias imp_get for imp_read
+    - Added alias imp_set for imp_write
 
 ### Version 0.5
     - Added imp_key (authenticate users with one or multiple keys)
