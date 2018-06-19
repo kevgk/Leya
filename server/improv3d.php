@@ -3,7 +3,7 @@
 	/** ---------------------------------------------------------------------------
 	 *
 	 *	Improv3d MySQL/PHP API
-	 *	Version: 0.6
+	 *	Version: 1.0
 	 *	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 	 *
 	 *	You should not edit this file,
@@ -20,15 +20,12 @@
 
 	if (!empty($_GET["action"]) && $rights[$_GET["action"]] && isAuthorized()) {
 
-		$mysqli	= new mysqli(SERVER, USER, PASSWORD, DATABASE);
-		if ($mysqli->connect_errno) {
-			imp_error('Can`t connect to database.');
-			exit();
-		}
+		$mysqli	= dbConnect();
 
 		foreach($_GET as $key => $value) {
 			$_GET[$key] = $mysqli->escape_string($value);
 		}
+
 
 		$table = $_GET["table"];
 
@@ -301,72 +298,14 @@
 				break;
 
 			case "read_where":
-				$column_where 	= $_GET["where"];
-				$row_where 		= $_GET["is"];
-				$column 		= $_GET["column"];
-
-				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where='$row_where'");
-
-					if (!$query) {
-						imp_return(0);
-					}
-					else {
-						while($res = $query->fetch_array()) {
-							$str .= $res[0] . ", ";
-						}
-						imp_return(substr($str, 0, -2));
-					}
-				}
-				break;
-
-			case "read_where_not":
 				$column_where = $_GET["where"];
 				$row_where = $_GET["is"];
 				$column = $_GET["column"];
+				$operator = $_GET['operator'];
+				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
 
-				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where!='$row_where'");
-
-					if (!$query) {
-						imp_return(0);
-					}
-					else {
-						while($res = $query->fetch_array()) {
-							$str .= $res[0] . ", ";
-						}
-						imp_return(substr($str, 0, -2));
-					}
-				}
-				break;
-
-			case "read_where_greater":
-				$column_where = $_GET["where"];
-				$row_where = $_GET["is"];
-				$column = $_GET["column"];
-
-				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where > '$row_where'");
-
-					if (!$query) {
-						imp_return(0);
-					}
-					else {
-						while($res = $query->fetch_array()) {
-							$str .= $res[0] . ", ";
-						}
-						imp_return(substr($str, 0, -2));
-					}
-				}
-				break;
-
-			case "read_where_less":
-				$column_where = $_GET["where"];
-				$row_where = $_GET["is"];
-				$column = $_GET["column"];
-
-				if (!empty($column_where) && !empty($row_where) && !empty($column)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where < '$row_where'");
+				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator '$row_where'");
 
 					if (!$query) {
 						imp_return(0);
@@ -396,11 +335,11 @@
 							imp_return(1);
 						}
 						else {
-							imp_return("0");
+							imp_return(0);
 						}
 					}
 					else {
-						imp_return("-1");
+						imp_return(-1);
 					}
 				}
 				break;
@@ -532,6 +471,17 @@
 				break;
 		}
 		$mysql->close();
+	}
+
+	function dbConnect() {
+		$db = new mysqli(SERVER, USER, PASSWORD, DATABASE);
+		if ($db->connect_errno) {
+			imp_error('Can`t connect to database.');
+			exit();
+		}
+		else {
+			return $db;
+		}
 	}
 
 	function imp_return($val) {
