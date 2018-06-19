@@ -2,12 +2,12 @@
 
 	/** ---------------------------------------------------------------------------
 	 *
-	 * Improv3d MySQL/PHP API
-	 * Version: 0.5
-	 * https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
+	 *	Improv3d MySQL/PHP API
+	 *	Version: 0.6
+	 *	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 	 *
-	 * You should not edit this file,
-	 * you can change your settings in the config.php file.
+	 *	You should not edit this file,
+	 *	you can change your settings in the config.php file.
 	 *
 	 * ---------------------------------------------------------------------------*/
 
@@ -16,6 +16,7 @@
 	header_remove("x-powered-by");
 	require 'config.php';
 
+	getRights();
 
 	if (!empty($_GET["action"]) && $rights[$_GET["action"]] && isAuthorized()) {
 
@@ -447,6 +448,10 @@
 				imp_return(md5($str));
 				break;
 
+			case "generate_key":
+				imp_return(md5(random_bytes(24)));
+				break;
+
 			case "file_write":
 				$file = $_GET['file'];
 				$content = $_GET['content'];
@@ -537,11 +542,20 @@
 		echo '<!--imp_error="Error: '.$val.'"-->';
 	}
 
+	function getRights() {
+		global $rights, $keys;
+		$nkey = $keys[$_GET['key']];
+
+		foreach($nkey as $field => $value) {
+			$rights[$field] = $value;
+		}
+	}
+
 	function isAuthorized() {
 		global $keys;
 		$key = $_GET['key'];
 
-		if (in_array($key, $keys) || empty($keys)) {
+		if (in_array($key, $keys) || array_key_exists($key, $keys) || empty($keys) || ALLOW_UNAUTHENTICATED) {
 			return true;
 		}
 		else {

@@ -1,7 +1,7 @@
 ﻿; ---------------------------------------------------------------------------
 ;
 ;		Improv3d MySQL/PHP API
-;		Version: 0.5
+;		Version: 0.6
 ;		https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 ;
 ; ---------------------------------------------------------------------------
@@ -18,9 +18,13 @@ global imp_key := ""
 
 ;---------------------------------------------------------------------------
 
-imp_read(table, row, column) {
+imp_get(table, row, column) {
 	query := imp_server "?action=read&table=" table "&row=" row "&column=" column
 	return imp_query(query)
+}
+
+imp_read(table, row, column) {
+	return imp_get(table, row, column)
 }
 
 imp_read_where(table, conditionColumn, conditionValue, column) {
@@ -44,9 +48,13 @@ imp_read_where_less(table, conditionColumn, conditionValue, column) {
 	return imp_query(query)
 }
 
-imp_write(table, row, column, value) {
+imp_set(table, row, column, value) {
 	query := imp_server "?action=write&table=" table "&row=" row "&column=" column "&value=" value
 	return imp_query(query)
+}
+
+imp_write(table, row, column, value) {
+	return imp_set(table, row, column, value)
 }
 
 imp_compare(table, row, column, value) {
@@ -179,6 +187,11 @@ imp_file_copy(file, dest) {
 
 imp_file_size(file, unit = "b") {
 	query := imp_server "?action=file_get_size&file=" file "&unit=" unit
+	return imp_query(query)
+}
+
+imp_generate_key() {
+	query := imp_server "?action=generate_key"
 	return imp_query(query)
 }
 

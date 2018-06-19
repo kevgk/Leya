@@ -2,8 +2,8 @@
 
 	/** ---------------------------------------------------------------------------
 	 *
-	 * 	Improv3d MySQL/PHP API
-	 * 	Version: 0.5
+	 *	Improv3d MySQL/PHP API
+	 * 	Version: 0.6
 	 * 	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 	 *
 	 * ---------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 	 * - FIELD_LENGTH: The length of a field, when you create a new column
 	 * - MAIL_SENDER:  The email-address you want to display, when you send emails via the api
 	 * - SHOW_AUTH_ERROR: Show unauthorized users an error or nothing (404)
+	 * - ALLOW_UNAUTHENTICATED: Allow access without a key, while using keys.
 	 */
 
 	define("SERVER", "localhost");
@@ -27,6 +28,7 @@
 	define("FIELD_LENGTH", 64);
 	define("MAIL_SENDER", "example@yourserver.de");
 	define("SHOW_AUTH_ERROR", true);
+	define("ALLOW_UNAUTHENTICATED", false);
 
 
 	/**
@@ -34,6 +36,7 @@
 	 * You can add multiple keys, for example for different users.
 	 * This helps to protect the api from unauthorized access.
 	 * If you don't want to use keys, just leave the variable empty.
+	 * For now, keys should only contain letters and numbers.
 	 *
 	 * Example for one user:
 	 * $keys = [
@@ -45,6 +48,20 @@
 	 * 	'your-first-key-in-here',
 	 * 	'your-second-key-here
 	 * ];
+	 *
+	 * You can also assign individual permissions to keys, for example to give only one user,
+	 * the permission to write to the database.
+	 *
+	 * $keys = [
+	 *	'329472386945f324' => [
+	 *		'write' => true,
+	 *		'delete_row' => true
+	 *	]
+	 * ];
+	 *
+	 * By default, when you use a key, all access without a key gets blocked.
+	 * You can disable this by settings ALLOW_UNAUTHENTICATED to true.
+	 * Now every user gets the overall permissions, but you can still overwrite some for specific keys.
 	 */
 
 	$keys = [
@@ -91,6 +108,7 @@
 		"file_exists" => true,
 		// MISC
 		"mail" => false,
-		"hash" => true
+		"hash" => true,
+		"generate_key" => false
 	);
 ?>
