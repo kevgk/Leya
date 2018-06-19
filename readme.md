@@ -9,7 +9,7 @@
 
 ## Changelog
 ### Version 1.0
-    - This version brings breaking changes with it
+This version brings breaking changes with it and is not backwards compatible.
     - Refactored the autohotkey part into a class (commands are now called like this: imp.get())
     - Changed all commands to camelCase
     - Removed imp_read, use imp_get
