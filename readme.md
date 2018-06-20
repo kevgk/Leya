@@ -16,6 +16,15 @@ imp.server := "http://my-server.com/improv3d.php"
 level := imp.get("users", "playerA", "level")
 msgbox PlayerA is on Level %level%.
 ```
+```autohotkey
+#include improv3d.ahk
+
+imp.server := "http://my-server.com/improv3d.php"
+
+; get a list with the names of users, where "level" is greater than 3
+pros := imp.getWhere("users", "name", "level", ">", 3)
+msgbox %pros% are over level 3.
+```
 
 ## Changelog
 ### Version 1.0
