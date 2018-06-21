@@ -1,7 +1,7 @@
 ﻿; ---------------------------------------------------------------------------
 ;
 ;		Improv3d MySQL/PHP API
-;		Version: 1.0
+;		Version: 1.1
 ;		https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 ;
 ; ---------------------------------------------------------------------------
@@ -166,12 +166,23 @@ class imp {
 		error := imp.get_error(response)
 		if error
 			return error
-		else
-			return imp.get_response(response)
+		else {
+			res := imp.get_response(response)
+			if imp.get_isArray(response)
+				return StrSplit(res, "||")
+			else
+				return res
+		}
 	}
 
 	get_response(response) {
 		pattern = <!--imp_return="(.*)"-->
+		RegExMatch(response, pattern, match)
+		return match1
+	}
+
+	get_isArray(response) {
+		pattern = <!--imp_isArray="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}

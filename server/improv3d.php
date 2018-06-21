@@ -3,7 +3,7 @@
 	/** ---------------------------------------------------------------------------
 	 *
 	 *	Improv3d MySQL/PHP API
-	 *	Version: 1.0
+	 *	Version: 1.1
 	 *	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 	 *
 	 *	You should not edit this file,
@@ -305,16 +305,15 @@
 				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
 
 				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator '$row_where'");
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
 
-					if (!$query) {
-						imp_return(0);
-					}
-					else {
-						while($res = $query->fetch_array()) {
-							$str .= $res[0] . ", ";
+					while($row = $query->fetch_array()) $result[] = $row['name'];
+
+					if ($result) {
+						if (count($result) > 1) {
+							imp_isArray(1);
 						}
-						imp_return(substr($str, 0, -2));
+						imp_return(implode('||', $result));
 					}
 				}
 				break;
@@ -486,6 +485,10 @@
 
 	function imp_return($val) {
 		echo '<!--imp_return="'.$val.'"-->';
+	}
+
+	function imp_isArray($val) {
+		echo '<!--imp_isArray="'.$val.'"-->';
 	}
 
 	function imp_error($val) {

@@ -1,4 +1,4 @@
-# :zap: Improv3d Api v1.0
+# :zap: Improv3d Api v1.1
 ## Requirements
     - Webserver(PHP4+)
     - MySQL database
@@ -27,6 +27,9 @@ msgbox %pros% are over level 3.
 ```
 
 ## Changelog
+### Version 1.1
+    - imp.getWhere now returns an array if your query returns more than one result, if not, you get a string
+
 ### Version 1.0
 This version brings breaking changes with it and is not backwards compatible.
 
