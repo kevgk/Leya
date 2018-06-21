@@ -1,4 +1,7 @@
 # :zap: Improv3d Api v1.1
+
+[![GitHub issue last update](https://img.shields.io/github/issues/detail/last-update/badges/shields/979.svg)](https://github.com/kevgk/AutoHotkey-MySQL-PHP-API)
+
 ## Requirements
     - Webserver(PHP4+)
     - MySQL database
