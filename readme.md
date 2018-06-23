@@ -22,9 +22,13 @@ msgbox PlayerA is on Level %level%.
 
 imp.server := "http://my-server.com/improv3d.php"
 
-; get a list with the names of users, where "level" is greater than 3
+; get an array with the names of users, where "level" is greater than 3
 pros := imp.getWhere("users", "name", "level", ">", 3)
-msgbox %pros% are over level 3.
+
+; turn the array into a comma seperated string
+list := imp.join(pros, ", ")
+
+msgbox %list% are over level 3.
 ```
 
 ## Changelog
