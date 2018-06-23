@@ -26,6 +26,16 @@ list := imp.join(pros, ", ")
 msgbox %list% are over level 3.
 ```
 
+```autohotkey
+#include improv3d.ahk
+
+imp.server := "http://my-server.com/improv3d.php"
+
+player := imp.getAll("users", "improv3d")
+
+msgbox % "Name: " player.name " Level: " player.level
+```
+
 ## Changelog
 ### Version 1.2
 - Renamed `imp.getRow` to `imp.getAll`
