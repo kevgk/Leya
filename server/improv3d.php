@@ -12,7 +12,7 @@
 	 * ---------------------------------------------------------------------------*/
 
 
-	// error_reporting(0);
+	error_reporting(0);
 	header_remove("x-powered-by");
 	require 'config.php';
 
