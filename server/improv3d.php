@@ -303,12 +303,11 @@
 				$column = $_GET["column"];
 				$operator = $_GET['operator'];
 				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
-				$primaryKey = getPrimaryKey($table);
 
 				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
 					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
 
-					while($row = $query->fetch_array()) $result[] = $row[$primaryKey];
+					while($row = $query->fetch_array()) $result[] = $row[$column];
 
 					if ($result) {
 						if (count($result) > 1) {
