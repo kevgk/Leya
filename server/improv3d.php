@@ -12,7 +12,7 @@
 	 * ---------------------------------------------------------------------------*/
 
 
-	error_reporting(0);
+	// error_reporting(0);
 	header_remove("x-powered-by");
 	require 'config.php';
 
@@ -30,7 +30,7 @@
 		$table = $_GET["table"];
 
 		switch($_GET["action"]) {
-			case "read":
+			case "get":
 				if (!empty($_GET["row"]) && !empty($_GET["column"])) {
 					$row = $_GET["row"];
 					$column = $_GET["column"];
@@ -46,7 +46,7 @@
 				}
 				break;
 
-			case "write":
+			case "set":
 				$row = $_GET["row"];
 				$column = $_GET["column"];
 				$value = $_GET["value"];
@@ -297,17 +297,18 @@
 				}
 				break;
 
-			case "read_where":
+			case "getWhere":
 				$column_where = $_GET["where"];
 				$row_where = $_GET["is"];
 				$column = $_GET["column"];
 				$operator = $_GET['operator'];
 				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
+				$primaryKey = getPrimaryKey($table);
 
 				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
 					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
 
-					while($row = $query->fetch_array()) $result[] = $row['name'];
+					while($row = $query->fetch_array()) $result[] = $row[$primaryKey];
 
 					if ($result) {
 						if (count($result) > 1) {
@@ -469,7 +470,7 @@
 				imp_return(filesize($file)/$divider);
 				break;
 		}
-		$mysql->close();
+		$mysqli->close();
 	}
 
 	function dbConnect() {
@@ -497,11 +498,14 @@
 
 	function getRights() {
 		global $rights, $keys;
-		$nkey = $keys[$_GET['key']];
+		if (!empty($_GET['key']) && is_array($keys[$_GET['key']])) {
+			$nkey = $keys[$_GET['key']];
 
-		foreach($nkey as $field => $value) {
-			$rights[$field] = $value;
+			foreach($nkey as $field => $value) {
+				$rights[$field] = $value;
+			}
 		}
+
 	}
 
 	function isAuthorized() {

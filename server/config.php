@@ -76,8 +76,9 @@
 
 	$rights = array(
 		// MYSQL
-		"read" => true,
-		"write" => true,
+		"get" => true,
+		"getWhere" => true,
+		"set" => true,
 		"create_row" => true,
 		"delete_row" => false,
 		"create_table" => false,
@@ -90,7 +91,6 @@
 		"rename_column" => false,
 		"row_exist" => true,
 		"exec" => false,
-		"read_where" => true,
 		"compare" => true,
 		"count_rows" => true,
 		"get_row" => true,

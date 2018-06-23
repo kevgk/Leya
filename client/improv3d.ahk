@@ -12,17 +12,17 @@ class imp {
 	static key := ""
 
 	get(table, row, column) {
-		query := imp.server "?action=read&table=" table "&row=" row "&column=" column
+		query := imp.server "?action=get&table=" table "&row=" row "&column=" column
 		return imp.query(query)
 	}
 
 	getWhere(table, column, conditionColumn, operator, conditionValue) {
-		query := imp.server "?action=read_where&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column "&operator=" operator
+		query := imp.server "?action=getWhere&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column "&operator=" operator
 		return imp.query(query)
 	}
 
 	set(table, row, column, value) {
-		query := imp.server "?action=write&table=" table "&row=" row "&column=" column "&value=" value
+		query := imp.server "?action=set&table=" table "&row=" row "&column=" column "&value=" value
 		return imp.query(query)
 	}
 
@@ -198,5 +198,12 @@ class imp {
 	URLDownloadToVar(url) {
 		obj:=ComObjCreate("WinHttp.WinHttpRequest.5.1"),obj.Open("GET",url),obj.Send()
 		return obj.status=200?obj.ResponseText:""
+	}
+
+	; https://autohotkey.com/boards/viewtopic.php?t=7124
+	join(Array, Sep = "") {
+		for k, v in Array
+			out .= Sep . v
+		return SubStr(Out, 1+StrLen(Sep))
 	}
 }
