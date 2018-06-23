@@ -34,6 +34,7 @@ msgbox %list% are over level 3.
 ## Changelog
 ### Version 1.1
     - imp.getWhere now returns an array if your query returns more than one result, if not, you get a string
+    - Added imp.join to turn arrays into strings
 
 ### Version 1.0
 This version brings breaking changes with it and is not backwards compatible.
