@@ -3,7 +3,7 @@
 	/** ---------------------------------------------------------------------------
 	 *
 	 *	Improv3d MySQL/PHP API
-	 * 	Version: 1.1
+	 * 	Version: 1.2
 	 * 	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 	 *
 	 * ---------------------------------------------------------------------------*/
@@ -78,6 +78,7 @@
 		// MYSQL
 		"get" => true,
 		"getWhere" => true,
+		"getAll" => true,
 		"set" => true,
 		"create_row" => true,
 		"delete_row" => false,
@@ -93,7 +94,6 @@
 		"exec" => false,
 		"compare" => true,
 		"count_rows" => true,
-		"get_row" => true,
 		"check_table" => true,
 		// FILE
 		"file_write" => false,

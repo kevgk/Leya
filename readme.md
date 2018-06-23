@@ -32,6 +32,12 @@ msgbox %list% are over level 3.
 ```
 
 ## Changelog
+### Version 1.2
+    - Renamed imp.getRow to imp.getAll
+    - imp.getAll now returns an object, with all values of a row, with key value pairs like player.name and player.level
+    - Dryed up query code in improv3d.ahk
+    - Internal helper functions now start with an underscore, like imp._parseObject
+
 ### Version 1.1
     - imp.getWhere now returns an array if your query returns more than one result, if not, you get a string
     - Added imp.join to turn arrays into strings

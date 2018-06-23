@@ -3,7 +3,7 @@
 	/** ---------------------------------------------------------------------------
 	 *
 	 *	Improv3d MySQL/PHP API
-	 *	Version: 1.1
+	 *	Version: 1.2
 	 *	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 	 *
 	 *	You should not edit this file,
@@ -42,6 +42,56 @@
 
 					if (!$mysqli->errno) {
 						imp_return($result[0]);
+					}
+				}
+				break;
+
+			case "getWhere":
+				$column_where = $_GET["where"];
+				$row_where = $_GET["is"];
+				$column = $_GET["column"];
+				$operator = $_GET['operator'];
+				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
+
+				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
+
+					while($row = $query->fetch_array()) $result[] = $row[$column];
+
+					if ($result) {
+						if (count($result) > 1) {
+							imp_isArray(1);
+						}
+						imp_return(implode('||', $result));
+					}
+				}
+				break;
+
+			case "getAll":
+				$row = $_GET["row"];
+
+				if (!empty($row)) {
+					$primaryKey = getPrimaryKey($table);
+
+					if (rowExist($row, $primaryKey)) {
+						$query = $mysqli->query("SELECT * FROM $table WHERE $primaryKey='$row'");
+						$result = $query->fetch_assoc();
+
+						$vals = [];
+
+						foreach($result as $column => $value) {
+							array_push($vals, $column . "::" . $value);
+						}
+
+						if ($vals) {
+							if (count($vals) > 1) {
+								imp_isAssoc(1);
+							}
+							imp_return(implode('||', $vals));
+						}
+					}
+					else {
+						imp_return(-1);
 					}
 				}
 				break;
@@ -297,27 +347,6 @@
 				}
 				break;
 
-			case "getWhere":
-				$column_where = $_GET["where"];
-				$row_where = $_GET["is"];
-				$column = $_GET["column"];
-				$operator = $_GET['operator'];
-				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
-
-				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
-
-					while($row = $query->fetch_array()) $result[] = $row[$column];
-
-					if ($result) {
-						if (count($result) > 1) {
-							imp_isArray(1);
-						}
-						imp_return(implode('||', $result));
-					}
-				}
-				break;
-
 			case "compare":
 				$row = $_GET["row"];
 				$column = $_GET["column"];
@@ -348,28 +377,6 @@
 				$row 	= $result->fetch_array();
 
 				imp_return($row[0]);
-				break;
-
-			case "get_row":
-				$row = $_GET["row"];
-
-				if (!empty($row)) {
-					$primaryKey 	= getPrimaryKey();
-
-					if (rowExist($row, $primaryKey)) {
-						$query = $mysqli->query("SELECT * FROM $table WHERE $primaryKey='$row'");
-						$result = $query->fetch_assoc();
-
-						foreach($result as $column => $value) {
-							$str .= $column . ": " . $value . ", ";
-						}
-
-						imp_return(substr($str, 0, -2));
-					}
-					else {
-						imp_return("-1");
-					}
-				}
 				break;
 
 			case "check_table":
@@ -489,6 +496,10 @@
 
 	function imp_isArray($val) {
 		echo '<!--imp_isArray="'.$val.'"-->';
+	}
+
+	function imp_isAssoc($val) {
+		echo '<!--imp_isAssoc="'.$val.'"-->';
 	}
 
 	function imp_error($val) {

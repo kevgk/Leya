@@ -1,7 +1,7 @@
 ﻿; ---------------------------------------------------------------------------
 ;
 ;		Improv3d MySQL/PHP API
-;		Version: 1.1
+;		Version: 1.2
 ;		https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
 ;
 ; ---------------------------------------------------------------------------
@@ -12,182 +12,200 @@ class imp {
 	static key := ""
 
 	get(table, row, column) {
-		query := imp.server "?action=get&table=" table "&row=" row "&column=" column
-		return imp.query(query)
+		query := "?action=get&table=" table "&row=" row "&column=" column
+		return imp._query(query)
 	}
 
 	getWhere(table, column, conditionColumn, operator, conditionValue) {
-		query := imp.server "?action=getWhere&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column "&operator=" operator
-		return imp.query(query)
+		query := "?action=getWhere&table=" table "&where=" conditionColumn "&is=" conditionValue "&column=" column "&operator=" operator
+		return imp._query(query)
+	}
+
+	getAll(table, a) {
+		query := "?table=" table "&action=getAll&row=" a
+		return imp._query(query)
 	}
 
 	set(table, row, column, value) {
-		query := imp.server "?action=set&table=" table "&row=" row "&column=" column "&value=" value
-		return imp.query(query)
+		query := "?action=set&table=" table "&row=" row "&column=" column "&value=" value
+		return imp._query(query)
 	}
 
 	compare(table, row, column, value) {
-		query := imp.server "?action=compare&table=" table "&row=" row "&column=" column "&value=" value
-		return imp.query(query)
+		query := "?action=compare&table=" table "&row=" row "&column=" column "&value=" value
+		return imp._query(query)
 	}
 
 	createRow(table, row) {
-		query := imp.server "?action=create_row&table=" table "&row=" row
-		return imp.query(query)
+		query := "?action=create_row&table=" table "&row=" row
+		return imp._query(query)
 	}
 
 	deleteRow(table, row) {
-		query := imp.server "?action=delete_row&table=" table "&row=" row
-		return imp.query(query)
+		query := "?action=delete_row&table=" table "&row=" row
+		return imp._query(query)
 	}
 
 	createTable(table, columns) {
-		query := imp.server "?action=create_table&name=" table "&columns=" columns
-		return imp.query(query)
+		query := "?action=create_table&name=" table "&columns=" columns
+		return imp._query(query)
 	}
 
 	deleteTable(table) {
-		query := imp.server "?action=delete_table&table=" table
-		return imp.query(query)
+		query := "?action=delete_table&table=" table
+		return imp._query(query)
 	}
 
 	listColumns(table) {
-		query := imp.server "?action=list_columns&table=" table
-		return imp.query(query)
+		query := "?action=list_columns&table=" table
+		return imp._query(query)
 	}
 
 	listRows(table) {
-		query := imp.server "?action=list_rows&table=" table
-		return imp.query(query)
+		query := "?action=list_rows&table=" table
+		return imp._query(query)
 	}
 
 	addColumn(table, column) {
-		query := imp.server "?action=add_column&table=" table "&column=" column
-		return imp.query(query)
+		query := "?action=add_column&table=" table "&column=" column
+		return imp._query(query)
 	}
 
 	deleteColumn(table, column) {
-		query := imp.server "?action=delete_column&table=" table "&column=" column
-		return imp.query(query)
+		query := "?action=delete_column&table=" table "&column=" column
+		return imp._query(query)
 	}
 
 	renameColumn(table, column, value) {
-		query := imp.server "?action=rename_column&table=" table "&column=" column "&newname=" value
-		return imp.query(query)
+		query := "?action=rename_column&table=" table "&column=" column "&newname=" value
+		return imp._query(query)
 	}
 
 	rowExist(table, row) {
-		query := imp.server "?action=row_exist&table=" table "&row=" row
-		return imp.query(query)
+		query := "?action=row_exist&table=" table "&row=" row
+		return imp._query(query)
 	}
 
 	exec(code) {
-		query := imp.server "?action=exec&query=" code
-		return imp.query(query)
+		query := "?action=exec&query=" code
+		return imp._query(query)
 	}
 
 	hash(a, b = "md5") {
-		query := imp.server "?action=hash&str=" a "&algo=" b
-		return imp.query(query)
+		query := "?action=hash&str=" a "&algo=" b
+		return imp._query(query)
 	}
 
 	mail(a, c, b = "E-Mail") {
-		query := imp.server "?action=mail&to=" a "&subject=" b "&message=" c
-		return imp.query(query)
+		query := "?action=mail&to=" a "&subject=" b "&message=" c
+		return imp._query(query)
 	}
 
 	tableExist(table) {
-		query := imp.server "?action=table_exist&name=" table
-		return imp.query(query)
+		query := "?action=table_exist&name=" table
+		return imp._query(query)
 	}
 
 	countRows(table) {
-		query := imp.server "?action=count_rows&table=" table
-		return imp.query(query)
-	}
-
-	getRow(table, a) {
-		query := imp.server "?table=" table "&action=get_row&row=" a
-		return imp.query(query)
+		query := "?action=count_rows&table=" table
+		return imp._query(query)
 	}
 
 	setColumn(table, a, b, c) {
-		query := imp.server "?table=" table "&action=set_column&column=" a "&type=" b "&len=" c
-		return imp.query(query)
+		query := "?table=" table "&action=set_column&column=" a "&type=" b "&len=" c
+		return imp._query(query)
 	}
 
 	checkTable(table) {
-		query := imp.server "?table=" table "&action=check_table"
-		return imp.query(query)
+		query := "?table=" table "&action=check_table"
+		return imp._query(query)
 	}
 
 	fileWrite(file, content = "", mode = "end") {
-		query := imp.server "?action=file_write&file=" file "&content=" content "&mode=" mode
-		return imp.query(query)
+		query := "?action=file_write&file=" file "&content=" content "&mode=" mode
+		return imp._query(query)
 	}
 
 	fileRead(file) {
-		query := imp.server "?action=file_read&file=" file
-		return imp.query(query)
+		query := "?action=file_read&file=" file
+		return imp._query(query)
 	}
 
 	fileDelete(file) {
-		query := imp.server "?action=file_delete&file=" file
-		return imp.query(query)
+		query := "?action=file_delete&file=" file
+		return imp._query(query)
 	}
 
 	fileRename(file, name) {
-		query := imp.server "?action=file_rename&file=" file "&name=" name
-		return imp.query(query)
+		query := "?action=file_rename&file=" file "&name=" name
+		return imp._query(query)
 	}
 
 	fileExists(file) {
-		query := imp.server "?action=file_exists&file=" file
-		return imp.query(query)
+		query := "?action=file_exists&file=" file
+		return imp._query(query)
 	}
 
 	fileCopy(file, dest) {
-		query := imp.server "?action=file_copy&file=" file "&dest=" dest
-		return imp.query(query)
+		query := "?action=file_copy&file=" file "&dest=" dest
+		return imp._query(query)
 	}
 
 	fileSize(file, unit = "b") {
-		query := imp.server "?action=file_get_size&file=" file "&unit=" unit
-		return imp.query(query)
+		query := "?action=file_get_size&file=" file "&unit=" unit
+		return imp._query(query)
 	}
 
 	generateKey() {
-		query := imp.server "?action=generate_key"
-		return imp.query(query)
+		query := "?action=generate_key"
+		return imp._query(query)
 	}
 
-	query(a) {
-		response := imp.URLDownloadToVar(a "&key=" imp.key)
-		error := imp.get_error(response)
+	_query(a) {
+		response := imp._URLDownloadToVar(imp.server a "&key=" imp.key)
+		error := imp._getError(response)
 		if error
 			return error
 		else {
-			res := imp.get_response(response)
-			if imp.get_isArray(response)
+			res := imp._getResponse(response)
+			if imp._getIsArray(response)
 				return StrSplit(res, "||")
+			else if imp._getIsAssoc(response)
+				return imp._parseObject(res)
 			else
 				return res
 		}
 	}
 
-	get_response(response) {
+	_parseObject(data) {
+		pairs := StrSplit(data, "||")
+		output := {}
+		for i, pair in pairs {
+			p := StrSplit(pair, "::")
+			output[p[1]] := p[2]
+		}
+		return output
+	}
+
+	_getResponse(response) {
 		pattern = <!--imp_return="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}
 
-	get_isArray(response) {
+	_getIsArray(response) {
 		pattern = <!--imp_isArray="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}
 
-	get_error(response) {
+	_getIsAssoc(response) {
+		pattern = <!--imp_isAssoc="(.*)"-->
+		RegExMatch(response, pattern, match)
+		return match1
+	}
+
+	_getError(response) {
 		pattern = <!--imp_error="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
@@ -195,7 +213,7 @@ class imp {
 
 	; Credits to maestrith for the URLDownloadToVar function
 	; https://autohotkey.com/boards/viewtopic.php?t=329
-	URLDownloadToVar(url) {
+	_URLDownloadToVar(url) {
 		obj:=ComObjCreate("WinHttp.WinHttpRequest.5.1"),obj.Open("GET",url),obj.Send()
 		return obj.status=200?obj.ResponseText:""
 	}
