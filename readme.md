@@ -1,4 +1,5 @@
 # :zap: Improv3d Api v1.1
+[![Gitter chat](https://badges.gitter.im/Improv3d-API.png)](https://gitter.im/Improv3d-API/Lobby)
 ## Installation
 - Open `config.php`, fill in your server data and adjust permissions.
 - Upload the `improv3d.php` and `config.php` files.
