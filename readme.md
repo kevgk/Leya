@@ -8,7 +8,7 @@
 ```autohotkey
 #include leya.ahk
 
-leya.server := "http://my-server.com/improv3d.php"
+leya.server := "http://my-server.com/leya.php"
 
 level := leya.get("users", "playerA", "level")
 msgbox PlayerA is on Level %level%.
@@ -16,7 +16,7 @@ msgbox PlayerA is on Level %level%.
 ```autohotkey
 #include leya.ahk
 
-leya.server := "http://my-server.com/improv3d.php"
+leya.server := "http://my-server.com/leya.php"
 
 ; get an array with the names of users, where "level" is greater than 3
 pros := leya.getWhere("users", "name", "level", ">", 3)
@@ -30,7 +30,7 @@ msgbox %list% are over level 3.
 ```autohotkey
 #include leya.ahk
 
-leya.server := "http://my-server.com/improv3d.php"
+leya.server := "http://my-server.com/leya.php"
 
 player := leya.getAll("users", "improv3d")
 
