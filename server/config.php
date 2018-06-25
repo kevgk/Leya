@@ -2,9 +2,10 @@
 
 	/** ---------------------------------------------------------------------------
 	 *
-	 *	Improv3d MySQL/PHP API
-	 * 	Version: 1.2
-	 * 	https://github.com/kevgk/AutoHotkey-MySQL-PHP-API
+	 *	Leya
+	 *	MySQL / PHP API
+	 * 	Version: 1.3
+	 * 	https://github.com/kevgk/leya
 	 *
 	 * ---------------------------------------------------------------------------*/
 
@@ -22,9 +23,9 @@
 	 */
 
 	define("SERVER", "localhost");
-	define("USER", "");
+	define("USER", "root");
 	define("PASSWORD", "");
-	define("DATABASE", "");
+	define("DATABASE", "test");
 	define("FIELD_LENGTH", 64);
 	define("MAIL_SENDER", "example@yourserver.de");
 	define("SHOW_AUTH_ERROR", true);

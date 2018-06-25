@@ -1,9 +1,14 @@
 ## Changelog
+### Version 1.3
+- Renamed the api to Leya
+- Implemented the json lib for autohotkey by cocobelgica
+- leya.getWhere can now return multiple properties from multiple rows
+
 ### Version 1.2
 - Renamed `imp.getRow` to `imp.getAll`
 - `imp.getAll` now returns an object, with all values of a row, with key value pairs like `player.name` and `player.level`
 - Dryed up query code in improv3d.ahk
-- Internal helper functions now start with an underscore, like `imp._parseObject`
+- Internal functions now start with an underscore, like `imp._parseObject`
 
 ### Version 1.1
 - imp.getWhere now returns an array if your query returns more than one result, if not, you get a string
@@ -27,7 +32,7 @@ This version brings breaking changes with it and is not backwards compatible.
 - Added alias imp_get for imp_read
 - Added alias imp_set for imp_write
 
-[Learn more about Authentification-Keys here](https://github.com/kevgk/AutoHotkey-MySQL-PHP-API/wiki/Authentification-Keys)
+[Learn more about Authentification-Keys here](https://github.com/kevgk/leya/wiki/Authentification-Keys)
 
 ### Version 0.5
 - Added imp_key (authenticate users with one or multiple keys)
