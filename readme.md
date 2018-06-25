@@ -3,7 +3,9 @@ _Formerly "Improv3d API"_
 
 [![Gitter chat](https://badges.gitter.im/Improv3d-API.png)](https://gitter.im/Improv3d-API/Lobby)
 ## About
-Leya is an api that enables the work with MySQL databases in autohotkey, without exposing server credentials to the client. This is done by running the api on a php server, between the client and the database.
+Leya is an api that enables the work with MySQL databases in autohotkey, without exposing server credentials to the client. This is done by running the api on a php server, between the client and the database. In addition to that, you get a powerful authentification & permission system.
+
+You don´t need to write any SQL queries, leya gives you a collection of commands to access and alter the database, and builds the queries for you.
 
 ## Installation
 - Open `config.php`, fill in your server data and adjust permissions.
