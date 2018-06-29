@@ -13,6 +13,55 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 - Open `config.php`, fill in your server data and adjust permissions.
 - Upload the `leya.php` and `config.php` files.
 
+## Methods
+### Database
+#### Basic
+- get(table, row, column)
+- getWhere(table, column, conditionColumn, operator, conditionValue)
+- getAll(table, row)
+- set(table, row, column, value)
+- compare(table, row, column, value)
+
+#### Rows
+- createRow(table, row)
+- deleteRow(table, row)
+- listRows(table)
+- countRows(table)
+- rowExist(table, row)
+
+#### Columns
+- listColumns(table)
+- addColumn(table, column)
+- deleteColumn(table, column)
+- renameColumn(table, column, value)
+- setColumn(table, column, type, length)
+
+#### Table
+- createTable(table, columns)
+- deleteTable(table)
+- tableExist(table)
+- checkTable(table)
+- exec(query)
+
+### File
+- fileWrite(file, content, mode)
+- fileRead(file)
+- fileDelete(file)
+- fileRename(file, name)
+- fileExists(file)
+- fileCopy(file, destination)
+- fileSize(file, unit)
+
+### Misc
+- hash(content, algorithm)
+- mail(reciever, message, subject)
+- generateKey()
+- join(array, seperator)
+
+## Properties
+- leya.server
+- leya.key
+
 ## Examples
 ```autohotkey
 #include leya.ahk
