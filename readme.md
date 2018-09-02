@@ -17,7 +17,7 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 ### Database
 #### Basic
 - get(table, row, column)
-- getWhere(table, column, conditionColumn, operator, conditionValue)
+- [getWhere(table, column, conditionColumn, operator, conditionValue)](https://github.com/kevgk/Leya/wiki/leya.getWhere)
 - getAll(table, row)
 - set(table, row, column, value)
 - compare(table, row, column, value)
