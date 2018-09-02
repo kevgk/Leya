@@ -16,10 +16,10 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 ## Methods
 ### Database
 #### Basic
-- get(table, row, column)
+- [get(table, row, column)](https://github.com/kevgk/Leya/wiki/leya.get)
 - [getWhere(table, column, conditionColumn, operator, conditionValue)](https://github.com/kevgk/Leya/wiki/leya.getWhere)
 - getAll(table, row)
-- set(table, row, column, value)
+- [set(table, row, column, value)](https://github.com/kevgk/Leya/wiki/leya.set)
 - compare(table, row, column, value)
 
 #### Rows
