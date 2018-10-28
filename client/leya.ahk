@@ -2,7 +2,7 @@
 ;
 ;		Leya
 ;		MySQL / PHP API
-;		Version: 1.3
+;		Version: 1.3.1
 ;		https://github.com/kevgk/leya
 ;
 ; ---------------------------------------------------------------------------
