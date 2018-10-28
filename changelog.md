@@ -1,4 +1,7 @@
 ## Changelog
+### Version 1.3.1
+- Fix utf8 encoding
+
 ### Version 1.3
 - Renamed the api to Leya
 - Implemented the json lib for autohotkey by cocobelgica

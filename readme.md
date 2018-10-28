@@ -1,4 +1,4 @@
-# Leya 1.3
+# Leya 1.3.1
 _Formerly "Improv3d API"_
 
 [![Gitter chat](https://badges.gitter.im/Improv3d-API.png)](https://gitter.im/Improv3d-API/Lobby)
