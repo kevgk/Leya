@@ -22,6 +22,9 @@
 	if (!empty($_GET['action']) && $rights[$_GET['action']] && isAuthorized()) {
 
 		$mysqli	= dbConnect();
+		$mysqli->set_charset('utf8');
+		$mysqli->query("SET NAMES 'utf8'");
+    $mysqli->query("SET CHARACTER SET 'utf8'");
 
 		foreach($_GET as $key => $value) {
 			$_GET[$key] = $mysqli->escape_string($value);
@@ -363,8 +366,9 @@
 				$column = $_GET["column"];
 				$compare = $_GET["value"];
 
+
 				if (!empty($row) && !empty($column) && !empty($compare)) {
-					$primaryKey = getPrimaryKey();
+					$primaryKey = getPrimaryKey($table);
 
 					if (rowExist($row, $primaryKey)) {
 						$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row'");
