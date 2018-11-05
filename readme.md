@@ -100,7 +100,7 @@ If you share your application with others, they could figure out the url to your
 
 Don´t worry, the api has functions, to prevent this.
 
-You should always use [Authentification-Keys](https://github.com/kevgk/leya/wiki/Authentification-Keys), so someone without a key, can´t access the api. When you´re working with multiple users, assign individual keys for every user, so you could easily block someone, or limit their permissions.
+You should always use [Authentication-Keys](https://github.com/kevgk/leya/wiki/Authentification-Keys), so someone without a key, can´t access the api. When you´re working with multiple users, assign individual keys for every user, so you could easily block someone, or limit their permissions.
 
 Only give users the permissions they need.
 
