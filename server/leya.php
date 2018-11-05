@@ -24,7 +24,7 @@
 		$mysqli	= dbConnect();
 		$mysqli->set_charset('utf8');
 		$mysqli->query("SET NAMES 'utf8'");
-    $mysqli->query("SET CHARACTER SET 'utf8'");
+		$mysqli->query("SET CHARACTER SET 'utf8'");
 
 		foreach($_GET as $key => $value) {
 			$_GET[$key] = $mysqli->escape_string($value);
