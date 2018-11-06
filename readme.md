@@ -111,3 +111,6 @@ FileRead, userkey, %A_ScriptDir%/apikey
 
 leya.key := userkey
 ```
+
+## Todo
+- Convert all responses to json
