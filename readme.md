@@ -1,4 +1,4 @@
-# Leya 1.3.1
+# Leya 2.0.0
 _Formerly "Improv3d API"_
 
 [![Gitter chat](https://badges.gitter.im/Improv3d-API.png)](https://gitter.im/Improv3d-API/Lobby)
@@ -18,9 +18,8 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 #### Basic
 - [get(table, row, column)](https://github.com/kevgk/Leya/wiki/leya.get)
 - [getWhere(table, column, conditionColumn, operator, conditionValue)](https://github.com/kevgk/Leya/wiki/leya.getWhere)
-- getAll(table, row)
 - [set(table, row, column, value)](https://github.com/kevgk/Leya/wiki/leya.set)
-- compare(table, row, column, value)
+- compare(table, row, column, value, caseInsensitive)
 
 #### Rows
 - createRow(table, row)
@@ -61,6 +60,7 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 ## Properties
 - leya.server
 - leya.key
+- leya.debug
 
 ## Examples
 ```autohotkey
@@ -68,8 +68,8 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 
 leya.server := "http://my-server.com/leya.php"
 
-level := leya.get("users", "playerA", "level")
-msgbox PlayerA is on Level %level%.
+player := leya.get("users", "playerA", "level")
+msgbox PlayerA is on Level %player.level%
 ```
 ```autohotkey
 #include leya.ahk
@@ -90,7 +90,7 @@ msgbox %list% are over level 3.
 
 leya.server := "http://my-server.com/leya.php"
 
-player := leya.getAll("users", "improv3d")
+player := leya.get("users", "improv3d", "*")
 
 msgbox % "Name: " player.name " Level: " player.level
 ```
@@ -111,6 +111,3 @@ FileRead, userkey, %A_ScriptDir%/apikey
 
 leya.key := userkey
 ```
-
-## Todo
-- Convert all responses to json
