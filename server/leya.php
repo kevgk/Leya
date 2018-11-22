@@ -589,12 +589,16 @@
 	else {
 		$ResponseObject->error = -4;
 	}
-	api_send($ResponseObject);
+	$ResponseObject->send();
 
 	function dbConnect() {
+		global $ResponseObject;
+
 		$db = new mysqli(SERVER, USER, PASSWORD, DATABASE);
+
 		if ($db->connect_errno) {
-			imp_error('Can`t connect to database.');
+			$ResponseObject->error = -5;
+			$ResponseObject->send();
 			exit();
 		}
 		else {
@@ -612,11 +616,11 @@
 			$this->affectedRows = 0;
 			$this->data = null;
 		}
-	}
 
-	function api_send($ResponseObject) {
-		$json = json_encode($ResponseObject);
-		echo '<!--response="'.$json.'"-->';
+		public function send() {
+			$json = json_encode($this);
+			echo '<!--response="'.$json.'"-->';
+		}
 	}
 
 	function getRights() {
