@@ -13,6 +13,55 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 - Open `config.php`, fill in your server data and adjust permissions.
 - Upload the `leya.php` and `config.php` files.
 
+## Api Response Object
+The api always responds with an api response object.
+
+The object consists of 3 parts.
+
+### error
+When the error value is empty or 0, no error occurred, while executing the function.
+
+### affectedRows
+The amount of rows, that got affected by the function.
+
+### data
+The data you asked for, when calling the function.
+This can be a string or an array.
+
+```autohotkey
+#include leya.ahk
+
+leya.server := "http://my-server.com/leya.php"
+
+player := leya.get("users", "playerA", "first_name, last_name")
+
+if player.error
+  msgbox % player.error
+else
+  msgbox The fullname of playerA is %player.first_name% %player.last_name%.
+```
+
+```autohotkey
+#include leya.ahk
+
+leya.server := "http://my-server.com/leya.php"
+
+users := leya.getWhere("users", "*", "age", ">=", "18")
+
+if users.error
+  msgbox % users.error
+else {
+  msgbox Found %users.affectedRows% users over 18.
+  if users.data {
+    ; loop over all users, over the age of 18
+    for index, user in users.data {
+        msgbox % user.first_name " " user.last_name
+    }
+  }
+}
+```
+
+
 ## Methods
 ### Database
 #### Basic
