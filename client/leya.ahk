@@ -11,6 +11,8 @@
 class leya {
 	static server := ""
 	static key := ""
+	static error := ""
+	static affectedRows = 0
 
 	get(table, row, column) {
 		query := "?action=get&table=" table "&row=" row "&column=" column
@@ -89,7 +91,7 @@ class leya {
 
 	exec(code) {
 		query := "?action=exec&query=" code
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	hash(a, b = "md5") {
@@ -166,7 +168,7 @@ class leya {
 		response := this._URLDownloadToVar(this.server a "&key=" this.key)
 		error := this._getError(response)
 		if error
-			return error
+			this.error := error
 		else {
 			res := this._getResponse(response)
 			if this._getIsArray(response)
@@ -180,9 +182,12 @@ class leya {
 
 	_queryJSON(a) {
 		response := this._URLDownloadToVar(this.server a "&key=" this.key)
+		FileAppend, %response%, debug.txt
+		this.affectedRows := this._getAffectedRows(response)
+
 		error := this._getError(response)
 		if error
-			return error
+			this.error := error
 		else {
 			res := this._getResponse(response)
 			return JSON.load(res)
@@ -200,25 +205,31 @@ class leya {
 	}
 
 	_getResponse(response) {
-		pattern = <!--imp_return="(.*)"-->
+		pattern = U)<!--imp_return="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}
 
 	_getIsArray(response) {
-		pattern = <!--imp_isArray="(.*)"-->
+		pattern = U)<!--imp_isArray="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}
 
 	_getIsAssoc(response) {
-		pattern = <!--imp_isAssoc="(.*)"-->
+		pattern = U)<!--imp_isAssoc="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}
 
 	_getError(response) {
-		pattern = <!--imp_error="(.*)"-->
+		pattern = U)<!--imp_error="(.*)"-->
+		RegExMatch(response, pattern, match)
+		return match1
+	}
+
+	_getAffectedRows(response) {
+		pattern = U)<!--imp_affectedRows="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}

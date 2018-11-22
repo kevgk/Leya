@@ -76,7 +76,7 @@
 	 */
 
 	$rights = array(
-		// MYSQL
+		// MySQL
 		"get" => true,
 		"getWhere" => true,
 		"getAll" => true,
@@ -92,11 +92,11 @@
 		"add_column" => true,
 		"rename_column" => false,
 		"row_exist" => true,
-		"exec" => false,
+		"exec" => true,
 		"compare" => true,
 		"count_rows" => true,
 		"check_table" => true,
-		// FILE
+		// file
 		"file_write" => false,
 		"file_read" => true,
 		"file_delete" => false,
@@ -104,7 +104,7 @@
 		"file_copy" => false,
 		"file_size" => true,
 		"file_exists" => true,
-		// MISC
+		// misc
 		"mail" => false,
 		"hash" => true,
 		"generate_key" => false

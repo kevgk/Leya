@@ -13,7 +13,15 @@
 	 * ---------------------------------------------------------------------------*/
 
 
-	error_reporting(0);
+	//  $response = [
+	// 	 "error" => 0,
+	// 	 "affectedRows" => 0,
+	// 	 "data" => [
+
+	// 	 ]
+	//  ];
+
+	// error_reporting(0);
 	header_remove('x-powered-by');
 	require 'config.php';
 
@@ -27,7 +35,9 @@
 		$mysqli->query("SET CHARACTER SET 'utf8'");
 
 		foreach($_GET as $key => $value) {
-			$_GET[$key] = $mysqli->escape_string($value);
+			if($key != 'query') {
+				$_GET[$key] = $mysqli->escape_string($value);
+			}
 		}
 
 
@@ -323,21 +333,28 @@
 
 			case "exec":
 				$query	= $_GET['query'];
-				$result = $mysqli->query($query)->fetch_assoc();
+				$result = $mysqli->query($query);
 
-				if (is_array($result)) {
-					$output = "";
-					for ($i = 0, $x = sizeof($result); $i < $x; ++$i) {
-						$output .= key($result)." = ".current($result).", \n";
-						next($result);
+				imp_affectedRows($mysqli->affected_rows);
+
+				if ($mysqli->errno) {
+					imp_error("ERROR");
+				} else {
+					if (preg_match('/^UPDATE/', $query)) 	{
+						imp_return(json_encode($result));
 					}
-					imp_return($output);
-				}
-				else 	{
-					if ($result->affected_rows >= 0) {
-						imp_return(1);
+					elseif (preg_match('/^SELECT/', $query)) {
+						$out = [];
+	
+						while($row = $result->fetch_assoc()) {
+							array_push($out, $row);
+						}
+	
+						imp_return(json_encode($out));
 					}
 				}
+				
+				
 				break;
 
 			case "mail":
@@ -519,6 +536,10 @@
 
 	function imp_error($val) {
 		echo '<!--imp_error="Error: '.$val.'"-->';
+	}
+	
+	function imp_affectedRows($val) {
+		echo '<!--imp_affectedRows="'.$val.'"-->';
 	}
 
 	function getRights() {
