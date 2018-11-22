@@ -44,7 +44,6 @@
 
 			case 'get':
 				if (!empty($_GET['row']) && !empty($_GET['column'])) {
-					global $ResponseObject;
 					$row = $_GET['row'];
 					$column = $_GET['column'];
 					$primaryKey = getPrimaryKey($table);
@@ -70,7 +69,6 @@
 							}
 						}
 					}
-					
 				}
 				break;
 
@@ -80,7 +78,6 @@
 			 * ---------------------------------------------------------------------------*/
 
 			case "getWhere":
-				global $ResponseObject;
 				$column_where = $_GET["where"];
 				$row_where = $_GET["is"];
 				$column = $_GET["column"];
@@ -111,7 +108,6 @@
 				break;
 
 			case "set":
-				global $ResponseObject;
 				$row = $_GET["row"];
 				$column = $_GET["column"];
 				$value = $_GET["value"];
@@ -135,7 +131,6 @@
 				break;
 
 			case "compare":
-				global $ResponseObject;
 				$row = $_GET["row"];
 				$column = $_GET["column"];
 				$compare = $_GET["value"];
@@ -168,7 +163,6 @@
 				break;
 
 			case "create_row":
-				global $ResponseObject;
 				$row = $_GET["row"];
 
 				if (!empty($row)) {
@@ -190,7 +184,6 @@
 				break;
 
 			case "delete_row":
-				global $ResponseObject;
 				$row = $_GET["row"];
 				$primaryKey = getPrimaryKey($table);
 
@@ -209,7 +202,6 @@
 				break;
 
 			case "create_table":
-				global $ResponseObject;
 				$name = $_GET["name"];
 				$tableExist = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
@@ -237,7 +229,6 @@
 				break;
 
 			case "delete_table":
-				global $ResponseObject;
 				$name = $_GET["table"];
 				$tableExist = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
@@ -261,7 +252,6 @@
 				break;
 
 			case "list_columns":
-				global $ResponseObject;
 					$query = $mysqli->query("SHOW COLUMNS FROM $table");
 
 					$ResponseObject->affectedRows = $mysqli->affected_rows;
@@ -276,7 +266,6 @@
 				break;
 
 			case "list_rows":
-				global $ResponseObject;
 				$primaryKey = getPrimaryKey($table);
 				$query = $mysqli->query("SELECT $primaryKey FROM $table");
 
@@ -286,7 +275,6 @@
 				break;
 
 			case "table_exist":
-				global $ResponseObject;
 				$name = $_GET["name"];
 				if ($mysqli->query("SHOW TABLES LIKE '".$name."'")->num_rows) {
 					$ResponseObject->data = 1;
@@ -301,7 +289,6 @@
 				break;
 
 			case "delete_column":
-				global $ResponseObject;
 				$column = $_GET["column"];
 
 				if (!empty($column)) {
@@ -326,7 +313,6 @@
 				break;
 
 			case "add_column":
-				global $ResponseObject;
 				$column = $_GET["column"];
 
 				if (!empty($column)) {
@@ -350,7 +336,6 @@
 				break;
 
 			case "rename_column":
-				global $ResponseObject;
 				$column = $_GET["column"];
 				$newname = $_GET["newname"];
 
@@ -375,7 +360,6 @@
 				break;
 
 			case "row_exist":
-				global $ResponseObject;
 				$row = $_GET["row"];
 
 				if (!empty($row)) {
@@ -394,7 +378,6 @@
 				break;
 
 			case "exec":
-				global $ResponseObject;
 				$query	= $_GET['query'];
 				$result = $mysqli->query($query);
 
@@ -419,7 +402,6 @@
 				break;
 
 			case "mail":
-			global $ResponseObject;
 				$to = $_GET["to"];
 				$subject = $_GET["subject"];
 				$message = $_GET["message"];
@@ -432,7 +414,6 @@
 				break;
 
 			case "hash":
-				global $ResponseObject;
 				$str	= $_GET["str"];
 				$algo	= $_GET["algo"];
 
@@ -443,7 +424,6 @@
 				break;
 
 			case "count_rows":
-				global $ResponseObject;
 				$result = $mysqli->query("SELECT count(1) FROM $table");
 				$row 	= $result->fetch_array();
 
@@ -457,7 +437,6 @@
 				break;
 
 			case "check_table":
-				global $ResponseObject;
 
 				$query 	= $mysqli->query("SELECT * FROM $table");
 				while($content = $query->fetch_assoc()) {
@@ -474,12 +453,10 @@
 				break;
 
 			case "generate_key":
-				global $ResponseObject;
 				$ResponseObject->data = md5(random_bytes(24));
 				break;
 
 			case "file_write":
-				global $ResponseObject;
 				$file = $_GET['file'];
 				$content = $_GET['content'];
 				$mode = $_GET['mode'];
@@ -508,13 +485,11 @@
 				break;
 
 			case "file_read":
-				global $ResponseObject;
 				$file = $_GET['file'];
 				$ResponseObject->data = file_get_contents($file);
 				break;
 
 			case 'file_delete':
-				global $ResponseObject;
 				$file = $_GET['file'];
 				if (unlink($file)) {
 					$ResponseObject->data = 1;
@@ -522,7 +497,6 @@
 				break;
 
 			case 'file_rename':
-				global $ResponseObject;
 				$file = $_GET['file'];
 				$name = $_GET['name'];
 
@@ -532,7 +506,6 @@
 				break;
 
 			case 'file_copy':
-				global $ResponseObject;
 				$file = $_GET['file'];
 				$dest = $_GET['dest'];
 
@@ -542,7 +515,6 @@
 				break;
 
 			case 'file_exists':
-				global $ResponseObject;
 				$file = $_GET['file'];
 				if (file_exists($file)) {
 					$ResponseObject->data = 1;
@@ -550,7 +522,6 @@
 				break;
 
 			case 'file_size':
-				global $ResponseObject;
 				$file = $_GET['file'];
 				$unit = $_GET['unit'];
 
@@ -581,8 +552,6 @@
 		if ($mysqli->errno) {
 			$ResponseObject->error = -2;
 		}
-
-		
 
 		$mysqli->close();
 	}
