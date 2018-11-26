@@ -186,11 +186,14 @@ class leya {
 	}
 
 
-	; Credits to maestrith for the URLDownloadToVar function
+	; Credits to maestrith for the URLDownloadToVar function (modified)
 	; https://autohotkey.com/boards/viewtopic.php?t=329
 	_URLDownloadToVar(url) {
-		obj:=ComObjCreate("WinHttp.WinHttpRequest.5.1"),obj.Open("GET",url),obj.Send()
-		return obj.status=200?obj.ResponseText:""
+		obj := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		obj.Option(4) := 0x0100  + 0x0200 + 0x1000 + 0x2000
+		obj.Open("GET", url)
+		obj.Send()
+		return obj.status = 200 ? obj.ResponseText : ""
 	}
 
 	; https://autohotkey.com/boards/viewtopic.php?t=7124
