@@ -184,16 +184,6 @@ class leya {
 		return match1
 	}
 
-	_parseObject(data) {
-		pairs := StrSplit(data, "||")
-		output := {}
-		for i, pair in pairs {
-			p := StrSplit(pair, "::")
-			output[p[1]] := p[2]
-		}
-		return output
-	}
-
 
 	; Credits to maestrith for the URLDownloadToVar function (modified)
 	; https://autohotkey.com/boards/viewtopic.php?t=329
