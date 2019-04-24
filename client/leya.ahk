@@ -162,7 +162,7 @@ class leya {
 		response := this._URLDownloadToVar(this.server a "&key=" this.key)
 
 		if this.debug
-			FileAppend, %response%, debug.txt
+			FileAppend, %response%`n, debug.txt
 
 		data := this._extractData(response)
 
