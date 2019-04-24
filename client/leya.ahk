@@ -12,6 +12,8 @@ class leya {
 	static server := ""
 	static key := ""
 	static debug := 0
+	affectedRows := ""
+	error := ""
 
 	get(table, row, column) {
 		query := "?action=get&table=" table "&row=" row "&column=" column
@@ -159,6 +161,8 @@ class leya {
 	}
 
 	_queryJSON(a) {
+		this.error := ""
+		this.affectedRows := ""
 		response := this._URLDownloadToVar(this.server a "&key=" this.key)
 
 		if this.debug
@@ -166,7 +170,12 @@ class leya {
 
 		data := this._extractData(response)
 
-		return JSON.load(data)
+		obj := JSON.load(data)
+
+		this.error := obj.error
+		this.affectedRows := obj.affectedRows
+
+		return obj.data
 	}
 
 	_extractData(response) {
