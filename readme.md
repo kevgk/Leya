@@ -57,7 +57,7 @@ req := leya.getWhere("users", "*", "age", ">=", "18")
 if req.__error
   msgbox % req.__error
 else {
-  msgbox Found %req.users.__affectedRows% users over 18.
+  msgbox Found %req.__affectedRows% users over 18.
   if req.users {
     ; loop over all users, over the age of 18
     for index, user in req.users {
