@@ -13,21 +13,27 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 - Open `config.php`, fill in your server data and adjust permissions.
 - Upload the `leya.php` and `config.php` files.
 
-## Api Response Object
-The api always responds with an api response object.
+## Api Response
+### data
+The api responds with an object containing your data and metadata at the root level of the object.
 
-The object consists of 3 parts.
+### __error
+When the __error value is empty or 0, no error occurred, while executing the function.
 
-### error
-When the error value is empty or 0, no error occurred, while executing the function.
-
-### affectedRows
+### __affectedRows
 The amount of rows, that got affected by the function.
 
-### data
-The data you asked for, when calling the function.
-This can be a string or an array.
-
+### example
+Let's say you executed the get method and requested "username" and "role".
+Your response is going to look like this:
+```
+{
+  username
+  role
+  __error
+  __affectedRows
+}
+```
 ```autohotkey
 #include leya.ahk
 
@@ -35,8 +41,8 @@ leya.server := "http://my-server.com/leya.php"
 
 player := leya.get("users", "playerA", "first_name, last_name")
 
-if player.error
-  msgbox % player.error
+if player.__error
+  msgbox % player.__error
 else
   msgbox The fullname of playerA is %player.first_name% %player.last_name%.
 ```
@@ -46,15 +52,15 @@ else
 
 leya.server := "http://my-server.com/leya.php"
 
-users := leya.getWhere("users", "*", "age", ">=", "18")
+req := leya.getWhere("users", "*", "age", ">=", "18")
 
-if users.error
-  msgbox % users.error
+if req.__error
+  msgbox % req.__error
 else {
-  msgbox Found %users.affectedRows% users over 18.
-  if users.data {
+  msgbox Found %req.users.__affectedRows% users over 18.
+  if req.users {
     ; loop over all users, over the age of 18
-    for index, user in users.data {
+    for index, user in req.users {
         msgbox % user.first_name " " user.last_name
     }
   }
