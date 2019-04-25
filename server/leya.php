@@ -4,7 +4,7 @@
 	 *
 	 *	Leya
 	 *	MySQL / PHP API
-	 *	Version: 1.3.1
+	 *	Version: 2.0.0
 	 *	https://github.com/kevgk/leya
 	 *
 	 *	You should not edit this file,
@@ -12,10 +12,12 @@
 	 *
 	 * ---------------------------------------------------------------------------*/
 
-
 	error_reporting(0);
 	header_remove('x-powered-by');
 	require 'config.php';
+
+	// Create global response object
+	$ResponseObject = new ResponseObject();
 
 	getRights();
 
@@ -27,9 +29,10 @@
 		$mysqli->query("SET CHARACTER SET 'utf8'");
 
 		foreach($_GET as $key => $value) {
-			$_GET[$key] = $mysqli->escape_string($value);
+			if($key != 'query') {
+				$_GET[$key] = $mysqli->escape_string($value);
+			}
 		}
-
 
 		$table = $_GET['table'];
 
@@ -45,12 +48,26 @@
 					$column = $_GET['column'];
 					$primaryKey = getPrimaryKey($table);
 
-					if (!rowExist($row, $primaryKey)) exit(imp_return(-1));
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row'");
-					$result = $query->fetch_array();
+					if (!rowExist($row, $primaryKey)) {
+						$ResponseObject->error = -1;
+					} else {
+						$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row' LIMIT 1");
 
-					if (!$mysqli->errno) {
-						imp_return($result[0]);
+						while($row = $query->fetch_assoc()) $result[] = $row;
+
+						$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+						if ($mysqli->errno) {
+							$ResponseObject->error = -2;
+						}
+						else {
+							if ($result) {
+								if (count($result) == 1) {
+									$result = $result[0];
+								}
+								$ResponseObject->data = $result;
+							}
+						}
 					}
 				}
 				break;
@@ -70,43 +87,28 @@
 				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
 					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
 
-					while($row = $query->fetch_assoc()) $result[] = $row;
+					$ResponseObject->affectedRows = $mysqli->affected_rows;
 
-					if ($result) {
-						if (count($result) == 1) {
-							$result = $result[0];
-						}
-						imp_return(json_encode($result));
+					if ($mysqli->errno) {
+						$ResponseObject->error = -2;
 					}
-				}
-				break;
 
-			case "getAll":
-				$row = $_GET["row"];
+					if ($mysqli->affected_rows >= 1) {
+						while($row = $query->fetch_assoc()) $result[] = $row;
 
-				if (!empty($row)) {
-					$primaryKey = getPrimaryKey($table);
-
-					if (rowExist($row, $primaryKey)) {
-						$query = $mysqli->query("SELECT * FROM $table WHERE $primaryKey='$row'");
-						$result = $query->fetch_assoc();
-
-						$vals = [];
-
-						foreach($result as $column => $value) {
-							array_push($vals, $column . "::" . $value);
-						}
-
-						if ($vals) {
-							if (count($vals) > 1) {
-								imp_isAssoc(1);
+						if ($result) {
+							if (count($result) == 1) {
+								$result = $result[0];
 							}
-							imp_return(implode('||', $vals));
+							if (count($result[0]) > 1) {
+								$ResponseObject->data[$table] = $result;
+							}
+							else {
+								$ResponseObject->data = $result;
+							}
 						}
 					}
-					else {
-						imp_return(-1);
-					}
+					
 				}
 				break;
 
@@ -119,12 +121,48 @@
 					$primaryKey = getPrimaryKey($table);
 
 					if (rowExist($row, $primaryKey)) {
-						if ($mysqli->query("UPDATE `$table` SET `$column`='$value' WHERE `$primaryKey`='$row'")) {
-							imp_return(1);
+						$mysqli->query("UPDATE `$table` SET `$column`='$value' WHERE `$primaryKey`='$row'");
+
+						$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+						if ($mysqli->errno) {
+							$ResponseObject->error = -2;
 						}
 					}
 					else {
-						imp_return(-1);
+						$ResponseObject->error = -1;
+					}
+				}
+				break;
+
+			case "compare":
+				$row = $_GET["row"];
+				$column = $_GET["column"];
+				$compare = $_GET["value"];
+				$caseInsensitive = $_GET["caseInsensitive"];
+
+
+				if (!empty($row) && !empty($column) && !empty($compare)) {
+					$primaryKey = getPrimaryKey($table);
+
+					if (rowExist($row, $primaryKey)) {
+						$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row'");
+						$result = $query->fetch_array();
+
+						if($caseInsensitive) {
+							$result[0] = strtolower($result[0]);
+							$compare = strtolower($compare);
+						}
+
+						if ($result[0] == $compare) {
+							$ResponseObject->data = 1;
+						}
+						else {
+							$ResponseObject->data = 0;
+						}
+					}
+					else {
+						$ResponseObject->error = -1;
 					}
 				}
 				break;
@@ -136,11 +174,15 @@
 					$primaryKey = getPrimaryKey($table);
 
 					if (rowExist($row, $primaryKey)) {
-						imp_return("-1");
+						$ResponseObject->error = -1;
 					}
 					else {
-						if ($mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')")) {
-							imp_return(1);
+						$mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')");
+						
+						$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+						if ($mysqli->errno) {
+							$ResponseObject->error = -2;
 						}
 					}
 				}
@@ -151,12 +193,16 @@
 				$primaryKey = getPrimaryKey($table);
 
 				if (rowExist($row, $primaryKey)) {
-					if ($mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'")) {
-						imp_return(1);
+					$mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'");
+					
+					$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+					if ($mysqli->errno) {
+						$ResponseObject->error = -2;
 					}
 				}
 				else {
-					imp_return("-1");
+					$ResponseObject->error = -1;
 				}
 				break;
 
@@ -178,15 +224,12 @@
 					$create = $mysqli->query($queryStr);
 					$success = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
-					if ($success) {
-						imp_return(1);
-					}
-					else {
-						imp_return(0);
+					if ($mysqli->errno) {
+						$ResponseObject->error = -2;
 					}
 				}
 				else {
-					imp_return(-1);
+					$ResponseObject->error = -1;
 				}
 				break;
 
@@ -195,46 +238,59 @@
 				$tableExist = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 
 				if ($tableExist) {
-					$delete = $mysqli->query("DROP TABLE $name");
+					$mysqli->query("DROP TABLE $name");
+
+					$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+					if ($mysqli->errno) {
+						$ResponseObject->error = -2;
+					}
+
 					$success = $mysqli->query("SHOW TABLES LIKE '$name'")->num_rows;
 					if ($success !== 1) {
-						imp_return(1);
-					}
-					else {
-						imp_return(0);
+						$ResponseObject->data = 1;
 					}
 				}
 				else {
-					imp_return(-1);
+					$ResponseObject->error = -1;
 				}
 				break;
 
 			case "list_columns":
-					$list = $mysqli->query("SHOW COLUMNS FROM $table");
-					while($column = $list->fetch_array()) {
-						$columns .= $column[0] . ",";
+					$query = $mysqli->query("SHOW COLUMNS FROM $table");
+
+					$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+					if ($mysqli->errno) {
+						$ResponseObject->error = -2;
 					}
-					$columns = substr($columns, 0, -1);
-					imp_return($columns);
+
+					while($row = $query->fetch_array()) $result[] = $row[0];
+
+					$ResponseObject->data = $result;
 				break;
 
 			case "list_rows":
 				$primaryKey = getPrimaryKey($table);
-				$rows = $mysqli->query("SELECT $primaryKey FROM $table");
+				$query = $mysqli->query("SELECT $primaryKey FROM $table");
 
-				while($row = $rows->fetch_array()) {
-					$output .= $row[$primaryKey] . ", ";
-				}
+				while($row = $query->fetch_array()) $result[] = $row[0];
 
-				$output = substr($output, 0, -2);
-				imp_return($output);
+				$ResponseObject->data = $result;
 				break;
 
 			case "table_exist":
 				$name = $_GET["name"];
 				if ($mysqli->query("SHOW TABLES LIKE '".$name."'")->num_rows) {
-					imp_return(1);
+					$ResponseObject->data = 1;
 				}
+
+				$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+				if ($mysqli->errno) {
+					$ResponseObject->error = -2;
+				}
+
 				break;
 
 			case "delete_column":
@@ -244,17 +300,19 @@
 					$columnExist	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
 
 					if ($columnExist) {
-						$delete 	= $mysqli->query("ALTER TABLE $table DROP $column");
-						$success	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
-						if ($success != 1) {
-							imp_return(1);
+						if ($mysqli->query("ALTER TABLE $table DROP $column")) {
+							$ResponseObject->data = 1;
 						}
-						else {
-							imp_return(0);
+
+						$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+						if ($mysqli->errno) {
+							$ResponseObject->error = -2;
 						}
+
 					}
 					else {
-						imp_return(-1);
+						$ResponseObject->error = -1;
 					}
 				}
 				break;
@@ -266,17 +324,17 @@
 					$columnExist = $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
 
 					if ($columnExist == 1) {
-						imp_return(-1);
+						$ResponseObject->error = -1;
 					}
 					else {
-						$add 		= $mysqli->query("ALTER TABLE $table ADD $column VARCHAR(128)");
-						$success 	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
-
-						if ($success) {
-							imp_return(1);
+						if ($mysqli->query("ALTER TABLE $table ADD $column VARCHAR(128)")) {
+							$ResponseObject->data = 1;
 						}
-						else {
-							imp_return(0);
+
+						$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+						if ($mysqli->errno) {
+							$ResponseObject->error = -2;
 						}
 					}
 				}
@@ -290,18 +348,18 @@
 					$columnExist	= $mysqli->query("SELECT $column FROM $table LIMIT 1")->num_rows;
 
 					if ($columnExist) {
-						$rename		= $mysqli->query("ALTER TABLE $table CHANGE $column $newname VARCHAR(128)");
-						$success	= $mysqli->query("SELECT $newname FROM $table LIMIT 1")->num_rows;
-
-						if ($success == 1) {
-							imp_return(1);
+						if ($mysqli->query("ALTER TABLE $table CHANGE $column $newname VARCHAR(128)")) {
+							$ResponseObject->data = 1;
 						}
-						else {
-							imp_return(0);
+
+						$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+						if ($mysqli->errno) {
+							$ResponseObject->error = -2;
 						}
 					}
 					else {
-						imp_return(-1);
+						$ResponseObject->error = -1;
 					}
 				}
 				break;
@@ -313,29 +371,37 @@
 					$primaryKey = getPrimaryKey($table);
 
 					if (rowExist($row, $primaryKey)) {
-						imp_return(1);
+						$ResponseObject->data = 1;
 					}
-					else {
-						imp_return(0);
+
+					$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+					if ($mysqli->errno) {
+						$ResponseObject->error = -2;
 					}
 				}
 				break;
 
 			case "exec":
 				$query	= $_GET['query'];
-				$result = $mysqli->query($query)->fetch_assoc();
+				$result = $mysqli->query($query);
 
-				if (is_array($result)) {
-					$output = "";
-					for ($i = 0, $x = sizeof($result); $i < $x; ++$i) {
-						$output .= key($result)." = ".current($result).", \n";
-						next($result);
+				$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+				if ($mysqli->errno) {
+					$ResponseObject->error = $mysqli->errno;
+				} else {
+					if (preg_match('/^UPDATE/', $query)) 	{
+						$ResponseObject->data = $result;
 					}
-					imp_return($output);
-				}
-				else 	{
-					if ($result->affected_rows >= 0) {
-						imp_return(1);
+					elseif (preg_match('/^SELECT/', $query)) {
+						$out = [];
+	
+						while($row = $result->fetch_assoc()) {
+							array_push($out, $row);
+						}
+	
+						$ResponseObject->data = $out;
 					}
 				}
 				break;
@@ -346,8 +412,9 @@
 				$message = $_GET["message"];
 
 				if (!empty($to) && !empty($message)) {
-					$mail = mail($to, $subject, $message, "From: ".MAIL_SENDER);
-					imp_return(($mail) ? 1 : 0);
+					if (mail($to, $subject, $message, "From: ".MAIL_SENDER)) {
+						$ResponseObject->data = 1;
+					}
 				}
 				break;
 
@@ -357,33 +424,7 @@
 
 				if (!empty($str) && !empty($algo)) {
 					if (in_array($algo, hash_algos()))
-						imp_return(hash($algo, $str));
-				}
-				break;
-
-			case "compare":
-				$row = $_GET["row"];
-				$column = $_GET["column"];
-				$compare = $_GET["value"];
-
-
-				if (!empty($row) && !empty($column) && !empty($compare)) {
-					$primaryKey = getPrimaryKey($table);
-
-					if (rowExist($row, $primaryKey)) {
-						$query = $mysqli->query("SELECT $column FROM $table WHERE $primaryKey='$row'");
-						$result = $query->fetch_array();
-
-						if ($result[0] == $compare) {
-							imp_return(1);
-						}
-						else {
-							imp_return(0);
-						}
-					}
-					else {
-						imp_return(-1);
-					}
+					$ResponseObject->data = hash($algo, $str);
 				}
 				break;
 
@@ -391,25 +432,33 @@
 				$result = $mysqli->query("SELECT count(1) FROM $table");
 				$row 	= $result->fetch_array();
 
-				imp_return($row[0]);
+				$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+				if ($mysqli->errno) {
+					$ResponseObject->error = -2;
+				}
+
+				$ResponseObject->data = $row[0];
 				break;
 
 			case "check_table":
+
 				$query 	= $mysqli->query("SELECT * FROM $table");
 				while($content = $query->fetch_assoc()) {
 					$str .= serialize($content);
 				}
 
-				$query = $mysqli->query("SELECT count(1) FROM $table");
-				$rows 	= $query->fetch_array();
+				$ResponseObject->affectedRows = $mysqli->affected_rows;
 
-				$str .= $rows[0];
+				if ($mysqli->errno) {
+					$ResponseObject->error = -2;
+				}
 
-				imp_return(md5($str));
+				$ResponseObject->data = md5($str);
 				break;
 
 			case "generate_key":
-				imp_return(md5(random_bytes(24)));
+				$ResponseObject->data = md5(random_bytes(24));
 				break;
 
 			case "file_write":
@@ -431,39 +480,50 @@
 				fclose($handle);
 
 				if (empty($content) && file_exists($file)) {
-					imp_return(1);
+					$ResponseObject->data = 1;
 				}
 				else {
-					($s>0) ? imp_return(1) : imp_return(0);
+					if ($s>0) {
+						$ResponseObject->data = 1;
+					}
 				}
-
 				break;
 
 			case "file_read":
 				$file = $_GET['file'];
-				imp_return(file_get_contents($file));
+				$ResponseObject->data = file_get_contents($file);
 				break;
 
 			case 'file_delete':
 				$file = $_GET['file'];
-				imp_return(unlink($file));
+				if (unlink($file)) {
+					$ResponseObject->data = 1;
+				}
 				break;
 
 			case 'file_rename':
 				$file = $_GET['file'];
 				$name = $_GET['name'];
-				imp_return(rename($file, $name));
+
+				if (rename($file, $name)){
+					$ResponseObject->data = 1;
+				}
 				break;
 
 			case 'file_copy':
 				$file = $_GET['file'];
 				$dest = $_GET['dest'];
-				imp_return(copy($file, $dest));
+
+				if (copy($file, $dest)) {
+					$ResponseObject->data = 1;
+				}
 				break;
 
 			case 'file_exists':
 				$file = $_GET['file'];
-				(file_exists($file)) ? imp_return(1) : imp_return(0);
+				if (file_exists($file)) {
+					$ResponseObject->data = 1;
+				}
 				break;
 
 			case 'file_size':
@@ -488,16 +548,31 @@
 						break;
 				}
 
-				imp_return(filesize($file)/$divider);
+				$ResponseObject->data = filesize($file)/$divider;
 				break;
 		}
+		
+		$ResponseObject->affectedRows = $mysqli->affected_rows;
+
+		if ($mysqli->errno) {
+			$ResponseObject->error = -2;
+		}
+
 		$mysqli->close();
 	}
+	else {
+		$ResponseObject->error = -4;
+	}
+	$ResponseObject->send();
 
 	function dbConnect() {
+		global $ResponseObject;
+
 		$db = new mysqli(SERVER, USER, PASSWORD, DATABASE);
+
 		if ($db->connect_errno) {
-			imp_error('Can`t connect to database.');
+			$ResponseObject->error = -5;
+			$ResponseObject->send();
 			exit();
 		}
 		else {
@@ -505,20 +580,24 @@
 		}
 	}
 
-	function imp_return($val) {
-		echo '<!--imp_return="'.$val.'"-->';
-	}
+	class ResponseObject {
+		public $error;
+		public $affectedRows;
+		public $data;
 
-	function imp_isArray($val) {
-		echo '<!--imp_isArray="'.$val.'"-->';
-	}
+		function __construct() {
+			$this->error = 0;
+			$this->affectedRows = 0;
+			$this->data = null;
+		}
 
-	function imp_isAssoc($val) {
-		echo '<!--imp_isAssoc="'.$val.'"-->';
-	}
-
-	function imp_error($val) {
-		echo '<!--imp_error="Error: '.$val.'"-->';
+		public function send() {
+			$data = $this->data;
+			$data["__error"] = $this->error;
+			$data["__affectedRows"] = $this->affectedRows;
+			$json = json_encode($data);
+			echo '<!--response="'.$json.'"-->';
+		}
 	}
 
 	function getRights() {
@@ -530,11 +609,10 @@
 				$rights[$field] = $value;
 			}
 		}
-
 	}
 
 	function isAuthorized() {
-		global $keys;
+		global $keys, $ResponseObject;
 		$key = $_GET['key'];
 
 		if (in_array($key, $keys) || array_key_exists($key, $keys) || empty($keys) || ALLOW_UNAUTHENTICATED) {
@@ -542,7 +620,7 @@
 		}
 		else {
 			if (SHOW_AUTH_ERROR) {
-				imp_error('Not authorized.');
+				$ResponseObject->error = -3;
 			}
 			else {
 				header("HTTP/1.0 404 Not Found");

@@ -4,7 +4,7 @@
 	 *
 	 *	Leya
 	 *	MySQL / PHP API
-	 * 	Version: 1.3.1
+	 * 	Version: 2.0.0
 	 * 	https://github.com/kevgk/leya
 	 *
 	 * ---------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@
 	 */
 
 	$keys = [
-
+	
 	];
 
 
@@ -76,10 +76,9 @@
 	 */
 
 	$rights = array(
-		// MYSQL
+		// Database
 		"get" => true,
 		"getWhere" => true,
-		"getAll" => true,
 		"set" => true,
 		"create_row" => true,
 		"delete_row" => false,
@@ -96,7 +95,7 @@
 		"compare" => true,
 		"count_rows" => true,
 		"check_table" => true,
-		// FILE
+		// File
 		"file_write" => false,
 		"file_read" => true,
 		"file_delete" => false,
@@ -104,7 +103,7 @@
 		"file_copy" => false,
 		"file_size" => true,
 		"file_exists" => true,
-		// MISC
+		// Misc
 		"mail" => false,
 		"hash" => true,
 		"generate_key" => false

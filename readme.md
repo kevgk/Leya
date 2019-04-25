@@ -1,4 +1,4 @@
-# Leya 1.3.1
+# Leya 2.0.0
 _Formerly "Improv3d API"_
 
 [![Gitter chat](https://badges.gitter.im/Improv3d-API.png)](https://gitter.im/Improv3d-API/Lobby)
@@ -13,14 +13,68 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 - Open `config.php`, fill in your server data and adjust permissions.
 - Upload the `leya.php` and `config.php` files.
 
+## Api Response
+### data
+The api responds with an object containing your data and metadata at the root level of the object. When requesting an array of rows, with methods like getWhere, the results are put into an array with the name of the database.
+
+### __error
+When the __error value is empty or 0, no error occurred, while executing the function.
+
+### __affectedRows
+The amount of rows, that got affected by the function.
+
+### example
+Let's say you executed the get method and requested "username" and "role".
+Your response is going to look like this:
+```
+{
+  username
+  role
+  __error
+  __affectedRows
+}
+```
+```autohotkey
+#include leya.ahk
+
+leya.server := "http://my-server.com/leya.php"
+
+player := leya.get("users", "playerA", "first_name, last_name")
+
+if player.__error
+  msgbox % player.__error
+else
+  msgbox The fullname of playerA is %player.first_name% %player.last_name%.
+```
+
+```autohotkey
+#include leya.ahk
+
+leya.server := "http://my-server.com/leya.php"
+
+req := leya.getWhere("users", "*", "age", ">=", "18")
+
+if req.__error
+  msgbox % req.__error
+else {
+  msgbox Found %req.__affectedRows% users over 18.
+  if req.users {
+    ; loop over all users, over the age of 18
+    for index, user in req.users {
+        msgbox % user.first_name " " user.last_name
+    }
+  }
+}
+```
+
+
 ## Methods
 ### Database
 #### Basic
 - [get(table, row, column)](https://github.com/kevgk/Leya/wiki/leya.get)
 - [getWhere(table, column, conditionColumn, operator, conditionValue)](https://github.com/kevgk/Leya/wiki/leya.getWhere)
-- getAll(table, row)
 - [set(table, row, column, value)](https://github.com/kevgk/Leya/wiki/leya.set)
-- compare(table, row, column, value)
+- compare(table, row, column, value, caseInsensitive)
 
 #### Rows
 - createRow(table, row)
@@ -61,6 +115,7 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 ## Properties
 - leya.server
 - leya.key
+- leya.debug
 
 ## Examples
 ```autohotkey
@@ -68,8 +123,8 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 
 leya.server := "http://my-server.com/leya.php"
 
-level := leya.get("users", "playerA", "level")
-msgbox PlayerA is on Level %level%.
+player := leya.get("users", "playerA", "level")
+msgbox PlayerA is on Level %player.level%
 ```
 ```autohotkey
 #include leya.ahk
@@ -90,7 +145,7 @@ msgbox %list% are over level 3.
 
 leya.server := "http://my-server.com/leya.php"
 
-player := leya.getAll("users", "improv3d")
+player := leya.get("users", "improv3d", "*")
 
 msgbox % "Name: " player.name " Level: " player.level
 ```
@@ -111,6 +166,3 @@ FileRead, userkey, %A_ScriptDir%/apikey
 
 leya.key := userkey
 ```
-
-## Todo
-- Convert all responses to json

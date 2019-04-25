@@ -2,7 +2,7 @@
 ;
 ;		Leya
 ;		MySQL / PHP API
-;		Version: 1.3.1
+;		Version: 2.0.0
 ;		https://github.com/kevgk/leya
 ;
 ; ---------------------------------------------------------------------------
@@ -11,10 +11,13 @@
 class leya {
 	static server := ""
 	static key := ""
+	static debug := 0
+	affectedRows := ""
+	error := ""
 
 	get(table, row, column) {
 		query := "?action=get&table=" table "&row=" row "&column=" column
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	getWhere(table, column, conditionColumn, operator, conditionValue) {
@@ -22,212 +25,167 @@ class leya {
 		return this._queryJSON(query)
 	}
 
-	getAll(table, a) {
-		query := "?table=" table "&action=getAll&row=" a
-		return this._query(query)
-	}
-
 	set(table, row, column, value) {
 		query := "?action=set&table=" table "&row=" row "&column=" column "&value=" value
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
-	compare(table, row, column, value) {
-		query := "?action=compare&table=" table "&row=" row "&column=" column "&value=" value
-		return this._query(query)
+	compare(table, row, column, value, caseInsensitive = "0") {
+		query := "?action=compare&table=" table "&row=" row "&column=" column "&value=" value "&caseInsensitive=" caseInsensitive
+		return this._queryJSON(query)
 	}
 
 	createRow(table, row) {
 		query := "?action=create_row&table=" table "&row=" row
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	deleteRow(table, row) {
 		query := "?action=delete_row&table=" table "&row=" row
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	createTable(table, columns) {
 		query := "?action=create_table&name=" table "&columns=" columns
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	deleteTable(table) {
 		query := "?action=delete_table&table=" table
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	listColumns(table) {
 		query := "?action=list_columns&table=" table
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	listRows(table) {
 		query := "?action=list_rows&table=" table
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	addColumn(table, column) {
 		query := "?action=add_column&table=" table "&column=" column
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	deleteColumn(table, column) {
 		query := "?action=delete_column&table=" table "&column=" column
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	renameColumn(table, column, value) {
 		query := "?action=rename_column&table=" table "&column=" column "&newname=" value
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	rowExist(table, row) {
 		query := "?action=row_exist&table=" table "&row=" row
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	exec(code) {
 		query := "?action=exec&query=" code
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	hash(a, b = "md5") {
 		query := "?action=hash&str=" a "&algo=" b
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	mail(a, c, b = "E-Mail") {
 		query := "?action=mail&to=" a "&subject=" b "&message=" c
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	tableExist(table) {
 		query := "?action=table_exist&name=" table
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	countRows(table) {
 		query := "?action=count_rows&table=" table
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	setColumn(table, a, b, c) {
 		query := "?table=" table "&action=set_column&column=" a "&type=" b "&len=" c
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	checkTable(table) {
 		query := "?table=" table "&action=check_table"
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileWrite(file, content = "", mode = "end") {
 		query := "?action=file_write&file=" file "&content=" content "&mode=" mode
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileRead(file) {
 		query := "?action=file_read&file=" file
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileDelete(file) {
 		query := "?action=file_delete&file=" file
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileRename(file, name) {
 		query := "?action=file_rename&file=" file "&name=" name
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileExists(file) {
 		query := "?action=file_exists&file=" file
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileCopy(file, dest) {
 		query := "?action=file_copy&file=" file "&dest=" dest
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	fileSize(file, unit = "b") {
 		query := "?action=file_get_size&file=" file "&unit=" unit
-		return this._query(query)
+		return this._queryJSON(query)
 	}
 
 	generateKey() {
 		query := "?action=generate_key"
-		return this._query(query)
-	}
-
-	_query(a) {
-		response := this._URLDownloadToVar(this.server a "&key=" this.key)
-		error := this._getError(response)
-		if error
-			return error
-		else {
-			res := this._getResponse(response)
-			if this._getIsArray(response)
-				return StrSplit(res, "||")
-			else if this._getIsAssoc(response)
-				return this._parseObject(res)
-			else
-				return res
-		}
+		return this._queryJSON(query)
 	}
 
 	_queryJSON(a) {
 		response := this._URLDownloadToVar(this.server a "&key=" this.key)
-		error := this._getError(response)
-		if error
-			return error
-		else {
-			res := this._getResponse(response)
-			return JSON.load(res)
-		}
+
+		if this.debug
+			FileAppend, %response%`n, debug.txt
+
+		data := this._extractData(response)
+
+		return JSON.load(data)
 	}
 
-	_parseObject(data) {
-		pairs := StrSplit(data, "||")
-		output := {}
-		for i, pair in pairs {
-			p := StrSplit(pair, "::")
-			output[p[1]] := p[2]
-		}
-		return output
-	}
-
-	_getResponse(response) {
-		pattern = <!--imp_return="(.*)"-->
+	_extractData(response) {
+		pattern = <!--response="(.*)"-->
 		RegExMatch(response, pattern, match)
 		return match1
 	}
 
-	_getIsArray(response) {
-		pattern = <!--imp_isArray="(.*)"-->
-		RegExMatch(response, pattern, match)
-		return match1
-	}
 
-	_getIsAssoc(response) {
-		pattern = <!--imp_isAssoc="(.*)"-->
-		RegExMatch(response, pattern, match)
-		return match1
-	}
-
-	_getError(response) {
-		pattern = <!--imp_error="(.*)"-->
-		RegExMatch(response, pattern, match)
-		return match1
-	}
-
-	; Credits to maestrith for the URLDownloadToVar function
+	; Credits to maestrith for the URLDownloadToVar function (modified)
 	; https://autohotkey.com/boards/viewtopic.php?t=329
 	_URLDownloadToVar(url) {
-		obj:=ComObjCreate("WinHttp.WinHttpRequest.5.1"),obj.Open("GET",url),obj.Send()
-		return obj.status=200?obj.ResponseText:""
+		obj := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		obj.Option(4) := 0x0100  + 0x0200 + 0x1000 + 0x2000
+		obj.Open("GET", url)
+		obj.Send()
+		return obj.status = 200 ? obj.ResponseText : ""
 	}
 
 	; https://autohotkey.com/boards/viewtopic.php?t=7124
