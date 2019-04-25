@@ -587,7 +587,10 @@
 		}
 
 		public function send() {
-			$json = json_encode($this);
+			$data = $this->data;
+			$data["__error"] = $this->error;
+			$data["__affectedRows"] = $this->affectedRows;
+			$json = json_encode($data);
 			echo '<!--response="'.$json.'"-->';
 		}
 	}
