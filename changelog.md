@@ -1,7 +1,7 @@
 ## Changelog
 ### Version 2.0.0
 - Add support for https and selfsigned certificates
-- Add ResponseObject
+- Add Meta Response Fields
 - Add leya.debug property
 - Improve leya.exec response handling
 
