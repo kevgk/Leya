@@ -12,8 +12,6 @@ class leya {
 	static server := ""
 	static key := ""
 	static debug := 0
-	affectedRows := ""
-	error := ""
 
 	get(table, row, column) {
 		query := "?action=get&table=" table "&row=" row "&column=" column
