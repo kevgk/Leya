@@ -100,7 +100,12 @@
 							if (count($result) == 1) {
 								$result = $result[0];
 							}
-							$ResponseObject->data = $result;
+							if (count($result[0]) > 1) {
+								$ResponseObject->data[$table] = $result;
+							}
+							else {
+								$ResponseObject->data = $result;
+							}
 						}
 					}
 					
