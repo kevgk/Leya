@@ -15,7 +15,7 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 
 ## Api Response
 ### data
-The api responds with an object containing your data and metadata at the root level of the object.
+The api responds with an object containing your data and metadata at the root level of the object. When requesting an array of rows, with methods like getWhere, the results are put into an array with the name of the database.
 
 ### __error
 When the __error value is empty or 0, no error occurred, while executing the function.
