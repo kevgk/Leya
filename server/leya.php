@@ -85,7 +85,7 @@
 				$operatorWhitelist = ['=', '!=', '<', '>', '>=', '<='];
 
 				if (!empty($column_where) && !empty($row_where) && !empty($column) && in_array($operator, $operatorWhitelist)) {
-					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator $row_where");
+					$query = $mysqli->query("SELECT $column FROM $table WHERE $column_where $operator '$row_where'");
 
 					$ResponseObject->affectedRows = $mysqli->affected_rows;
 
