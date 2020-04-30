@@ -4,7 +4,6 @@
 	 *
 	 *	Leya
 	 *	MySQL / PHP API
-	 *	Version: 2.0.0
 	 *	https://github.com/kevgk/leya
 	 *
 	 *	You should not edit this file,
@@ -21,7 +20,7 @@
 
 	getRights();
 
-	if (!empty($_GET['action']) && $rights[$_GET['action']] && isAuthorized()) {
+	if (!empty($_GET['action']) && $rights[$_GET['action']] && isAuthorized() || TEST_MODE) {
 
 		$mysqli	= dbConnect();
 		$mysqli->set_charset('utf8');
@@ -113,7 +112,7 @@
 							}
 						}
 					}
-					
+
 				}
 				break;
 
@@ -183,7 +182,7 @@
 					}
 					else {
 						$mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')");
-						
+
 						$ResponseObject->affectedRows = $mysqli->affected_rows;
 
 						if ($mysqli->errno) {
@@ -199,7 +198,7 @@
 
 				if (rowExist($row, $primaryKey)) {
 					$mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'");
-					
+
 					$ResponseObject->affectedRows = $mysqli->affected_rows;
 
 					if ($mysqli->errno) {
@@ -401,11 +400,11 @@
 					}
 					elseif (preg_match('/^SELECT/', $query)) {
 						$out = [];
-	
+
 						while($row = $result->fetch_assoc()) {
 							array_push($out, $row);
 						}
-	
+
 						$ResponseObject->data = $out;
 					}
 				}
@@ -556,7 +555,7 @@
 				$ResponseObject->data = filesize($file)/$divider;
 				break;
 		}
-		
+
 		$ResponseObject->affectedRows = $mysqli->affected_rows;
 
 		if ($mysqli->errno) {
@@ -597,9 +596,9 @@
 		}
 
 		public function send() {
-			$data = $this->data;
-			$data["__error"] = $this->error;
-			$data["__affectedRows"] = $this->affectedRows;
+			$data["data"] = $this->data;
+			$data["error"] = $this->error;
+			$data["affectedRows"] = $this->affectedRows;
 			$json = json_encode($data);
 			echo '<!--response="'.$json.'"-->';
 		}

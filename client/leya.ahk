@@ -2,7 +2,6 @@
 ;
 ;		Leya
 ;		MySQL / PHP API
-;		Version: 2.0.0
 ;		https://github.com/kevgk/leya
 ;
 ; ---------------------------------------------------------------------------
@@ -12,6 +11,7 @@ class leya {
 	static server := ""
 	static key := ""
 	static debug := 0
+	static version := "3.0.0"
 
 	get(table, row, column) {
 		query := "?action=get&table=" table "&row=" row "&column=" column

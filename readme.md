@@ -1,8 +1,11 @@
-# Leya 2.0.0
+# Leya 3.0.0
+
 _Formerly "Improv3d API"_
 
 [![Gitter chat](https://badges.gitter.im/Improv3d-API.png)](https://gitter.im/Improv3d-API/Lobby)
+
 ## About
+
 Leya is an api that enables the work with MySQL databases in autohotkey, without exposing server credentials to the client. This is done by running the api on a php server, between the client and the database.
 
 In addition to that, you get a powerful authentification & permission system.
@@ -10,39 +13,51 @@ In addition to that, you get a powerful authentification & permission system.
 You don´t need to write any SQL queries, leya gives you a collection of commands to access and alter the database, and builds the queries for you.
 
 ## Installation
+
 - Open `config.php`, fill in your server data and adjust permissions.
 - Upload the `leya.php` and `config.php` files.
 
 ## Api Response
+
 ### data
-The api responds with an object containing your data and metadata at the root level of the object. When requesting an array of rows, with methods like getWhere, the results are put into an array with the name of the database.
 
-### __error
-When the __error value is empty or 0, no error occurred, while executing the function.
+The api responds with an object containing your data and metadata. When requesting an array of rows, with methods like getWhere, the results are put into an array with the name of the database.
 
-### __affectedRows
+### error
+
+When the \_\_error value is empty or 0, no error occurred, while executing the function.
+
+### affectedRows
+
 The amount of rows, that got affected by the function.
 
 ### example
+
 Let's say you executed the get method and requested "username" and "role".
 Your response is going to look like this:
+
 ```
 {
-  username
-  role
-  __error
-  __affectedRows
+  data {
+    username
+    role
+  }
+  error
+  affectedRows
 }
 ```
+
 ```autohotkey
 #include leya.ahk
 
 leya.server := "http://my-server.com/leya.php"
 
-player := leya.get("users", "playerA", "first_name, last_name")
+req := leya.get("users", "playerA", "first_name, last_name")
 
-if player.__error
-  msgbox % player.__error
+player := req.data
+
+if req.error
+  msgbox % req.error
 else
   msgbox The fullname of playerA is %player.first_name% %player.last_name%.
 ```
@@ -54,29 +69,32 @@ leya.server := "http://my-server.com/leya.php"
 
 req := leya.getWhere("users", "*", "age", ">=", "18")
 
-if req.__error
-  msgbox % req.__error
+if req.error
+  msgbox % req.error
 else {
-  msgbox Found %req.__affectedRows% users over 18.
+  msgbox Found %req.affectedRows% users over 18.
   if req.users {
     ; loop over all users, over the age of 18
-    for index, user in req.users {
+    for index, user in req.data.users {
         msgbox % user.first_name " " user.last_name
     }
   }
 }
 ```
 
-
 ## Methods
+
 ### Database
+
 #### Basic
+
 - [get(table, row, column)](https://github.com/kevgk/Leya/wiki/leya.get)
 - [getWhere(table, column, conditionColumn, operator, conditionValue)](https://github.com/kevgk/Leya/wiki/leya.getWhere)
 - [set(table, row, column, value)](https://github.com/kevgk/Leya/wiki/leya.set)
 - compare(table, row, column, value, caseInsensitive)
 
 #### Rows
+
 - createRow(table, row)
 - deleteRow(table, row)
 - listRows(table)
@@ -84,6 +102,7 @@ else {
 - rowExist(table, row)
 
 #### Columns
+
 - listColumns(table)
 - addColumn(table, column)
 - deleteColumn(table, column)
@@ -91,6 +110,7 @@ else {
 - setColumn(table, column, type, length)
 
 #### Table
+
 - createTable(table, columns)
 - deleteTable(table)
 - tableExist(table)
@@ -98,6 +118,7 @@ else {
 - exec(query)
 
 ### File
+
 - fileWrite(file, content, mode)
 - fileRead(file)
 - fileDelete(file)
@@ -107,17 +128,20 @@ else {
 - fileSize(file, unit)
 
 ### Misc
+
 - hash(content, algorithm)
 - mail(reciever, message, subject)
 - generateKey()
 - join(array, seperator)
 
 ## Properties
+
 - leya.server
 - leya.key
 - leya.debug
 
 ## Examples
+
 ```autohotkey
 #include leya.ahk
 
@@ -126,6 +150,7 @@ leya.server := "http://my-server.com/leya.php"
 player := leya.get("users", "playerA", "level")
 msgbox PlayerA is on Level %player.level%
 ```
+
 ```autohotkey
 #include leya.ahk
 
@@ -151,6 +176,7 @@ msgbox % "Name: " player.name " Level: " player.level
 ```
 
 ## Security
+
 If you share your application with others, they could figure out the url to your server and use the api against you. Depending on your configuration, they could read anything from the database, modify data or even delete all tables.
 
 Don´t worry, the api has functions, to prevent this.
