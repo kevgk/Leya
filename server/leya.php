@@ -4,7 +4,6 @@
 	 *
 	 *	Leya
 	 *	MySQL / PHP API
-	 *	Version: 2.0.0
 	 *	https://github.com/kevgk/leya
 	 *
 	 *	You should not edit this file,
