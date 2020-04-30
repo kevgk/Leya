@@ -20,7 +20,7 @@
 
 	getRights();
 
-	if (!empty($_GET['action']) && $rights[$_GET['action']] && isAuthorized()) {
+	if (!empty($_GET['action']) && $rights[$_GET['action']] && isAuthorized() || TEST_MODE) {
 
 		$mysqli	= dbConnect();
 		$mysqli->set_charset('utf8');

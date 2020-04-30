@@ -30,6 +30,12 @@
 	define("SHOW_AUTH_ERROR", true);
 	define("ALLOW_UNAUTHENTICATED", false);
 
+	/**
+	 * Test Mode is only meant for contributors while developing the api and should always be disabled (set to false),
+	 * since it disables all privilege checks.
+	 */
+
+	define("TEST_MODE", false);
 
 	/**
 	 * Api keys
