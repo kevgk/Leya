@@ -4,7 +4,6 @@
 #include tests/Set.ahk
 #include ../leya.ahk
 
-; leya.debug := 1
 leya.server := "http://localhost/Leya/server/leya.php"
 
 global TABLE_NAME := "__leya_tests"
