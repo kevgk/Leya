@@ -113,7 +113,7 @@
 							}
 						}
 					}
-					
+
 				}
 				break;
 
@@ -183,7 +183,7 @@
 					}
 					else {
 						$mysqli->query("INSERT INTO $table ($primaryKey) VALUES ('$row')");
-						
+
 						$ResponseObject->affectedRows = $mysqli->affected_rows;
 
 						if ($mysqli->errno) {
@@ -199,7 +199,7 @@
 
 				if (rowExist($row, $primaryKey)) {
 					$mysqli->query("DELETE FROM $table WHERE $primaryKey='$row'");
-					
+
 					$ResponseObject->affectedRows = $mysqli->affected_rows;
 
 					if ($mysqli->errno) {
@@ -401,11 +401,11 @@
 					}
 					elseif (preg_match('/^SELECT/', $query)) {
 						$out = [];
-	
+
 						while($row = $result->fetch_assoc()) {
 							array_push($out, $row);
 						}
-	
+
 						$ResponseObject->data = $out;
 					}
 				}
@@ -556,7 +556,7 @@
 				$ResponseObject->data = filesize($file)/$divider;
 				break;
 		}
-		
+
 		$ResponseObject->affectedRows = $mysqli->affected_rows;
 
 		if ($mysqli->errno) {
@@ -597,7 +597,7 @@
 		}
 
 		public function send() {
-			$data = $this->data;
+			$data["data"] = $this->data;
 			$data["__error"] = $this->error;
 			$data["__affectedRows"] = $this->affectedRows;
 			$json = json_encode($data);
