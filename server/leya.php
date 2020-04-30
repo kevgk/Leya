@@ -599,7 +599,7 @@
 		public function send() {
 			$data["data"] = $this->data;
 			$data["error"] = $this->error;
-			$data["__affectedRows"] = $this->affectedRows;
+			$data["affectedRows"] = $this->affectedRows;
 			$json = json_encode($data);
 			echo '<!--response="'.$json.'"-->';
 		}
