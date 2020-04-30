@@ -1,5 +1,4 @@
-﻿#SingleInstance force
-#include Test.class.ahk
+﻿#include Test.class.ahk
 
 ; names := leya.getWhere("kunden", "Ansprechpartner", "Firma", "=", "Google")
 
@@ -60,28 +59,3 @@ class Get_Tests {
   }
 
 }
-
-
-
-
-
-
-
-
-
-; get_test2222() {
-;   req := leya.get("kunden", "test222", "Firma, Ansprechpartner")
-;   msgbox % req.data.Firma " - " req.data.Ansprechpartner
-; }
-
-; getWhere_test1() {
-;   req := leya.getWhere("kunden", "Ansprechpartner", "Nummer", "=", "test222")
-;   msgbox % req.data.Ansprechpartner
-; }
-
-; getWhere_test2() {
-;   req := leya.getWhere("kunden", "Ansprechpartner", "Firma", "=", "Google")
-;   msgbox % req.data[1].Ansprechpartner " ... " req.data[2].Ansprechpartner
-; }
-
-; leya.createTable("users", ["name", "age", "level"])
