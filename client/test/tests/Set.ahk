@@ -1,4 +1,3 @@
-#SingleInstance force
 #include Test.class.ahk
 
 class Set_Tests {
