@@ -21,13 +21,13 @@ You don´t need to write any SQL queries, leya gives you a collection of command
 
 ### data
 
-The api responds with an object containing your data and metadata at the root level of the object. When requesting an array of rows, with methods like getWhere, the results are put into an array with the name of the database.
+The api responds with an object containing your data and metadata. When requesting an array of rows, with methods like getWhere, the results are put into an array with the name of the database.
 
-### \_\_error
+### error
 
 When the \_\_error value is empty or 0, no error occurred, while executing the function.
 
-### \_\_affectedRows
+### affectedRows
 
 The amount of rows, that got affected by the function.
 
@@ -38,10 +38,12 @@ Your response is going to look like this:
 
 ```
 {
-  username
-  role
-  __error
-  __affectedRows
+  data {
+    username
+    role
+  }
+  error
+  affectedRows
 }
 ```
 
@@ -50,10 +52,12 @@ Your response is going to look like this:
 
 leya.server := "http://my-server.com/leya.php"
 
-player := leya.get("users", "playerA", "first_name, last_name")
+req := leya.get("users", "playerA", "first_name, last_name")
 
-if player.__error
-  msgbox % player.__error
+player := req.data
+
+if req.error
+  msgbox % req.error
 else
   msgbox The fullname of playerA is %player.first_name% %player.last_name%.
 ```
@@ -65,13 +69,13 @@ leya.server := "http://my-server.com/leya.php"
 
 req := leya.getWhere("users", "*", "age", ">=", "18")
 
-if req.__error
-  msgbox % req.__error
+if req.error
+  msgbox % req.error
 else {
-  msgbox Found %req.__affectedRows% users over 18.
+  msgbox Found %req.affectedRows% users over 18.
   if req.users {
     ; loop over all users, over the age of 18
-    for index, user in req.users {
+    for index, user in req.data.users {
         msgbox % user.first_name " " user.last_name
     }
   }
