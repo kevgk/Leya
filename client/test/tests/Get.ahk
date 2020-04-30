@@ -1,7 +1,5 @@
 ﻿#include Test.class.ahk
 
-; names := leya.getWhere("kunden", "Ansprechpartner", "Firma", "=", "Google")
-
 class Get_Tests {
 
   run() {
